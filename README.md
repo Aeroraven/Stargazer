@@ -1,0 +1,2 @@
+# Stargazer
+Algorithm exercises
