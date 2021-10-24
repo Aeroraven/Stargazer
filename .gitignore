@@ -1,2 +1,5 @@
 /MachineLearning/MNISTClassActivationMap/model/*
+/MachineLearning/MNISTClassActivationMap/model_cam/*
 /MachineLearning/MNISTClassActivationMap/.idea/*
+/MachineLearning/MNISTGradientClassActivationMap/model_gradcam/*
+/MachineLearning/MNISTGradientClassActivationMap/.idea/*
