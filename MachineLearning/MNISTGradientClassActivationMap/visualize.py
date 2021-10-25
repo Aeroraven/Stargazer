@@ -50,7 +50,7 @@ model.summary()
 
 
 # Get Classification Score
-idx = 1527
+idx = 2525
 sample = x_train[idx]
 sample_predict = model.predict(np.expand_dims(sample,axis=0),batch_size=1)
 fc_model = keras.Model(inputs=[input],outputs=[model.get_layer('dense_2').output])
