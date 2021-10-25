@@ -42,7 +42,7 @@ model.set_weights(tf.keras.models.load_model("model_cam").get_weights())
 
 # Get Output
 idx = np.random.randint(0,x_train.shape[0])
-idx= 144
+idx= 23
 sample = x_train[idx]
 inputx = np.expand_dims(sample,axis=0)
 sample_predict = model.predict(inputx)
