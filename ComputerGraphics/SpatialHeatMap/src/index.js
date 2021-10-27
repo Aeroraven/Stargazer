@@ -47,7 +47,7 @@ function init(classmap,fsz){
             for(let k=0;k<size;k++){
                 let geometry1 = new THREE.BoxGeometry(0.6,0.6);
                 let color =colormap(classmap[i][j][k])
-                let material1 = new THREE.MeshLambertMaterial({color:color, transparent: true, opacity: 0.2});
+                let material1 = new THREE.MeshLambertMaterial({color:color, transparent: true, opacity: 0.15});
                 let box = new THREE.Mesh(geometry1, material1);
                 box.translateX(i-halfsize);
                 box.translateY(j-halfsize);
@@ -60,17 +60,33 @@ function init(classmap,fsz){
 }
 
 var time = 0
+var rho = 0
 function rot(){
-    time +=0.02;
+    //time +=0.02;
     light.position.set(camera.x,camera.y,camera.z)
     light.castShadow= true;
     
     camera.lookAt(0,0,0)
-    camera.position.x =32*Math.sin(time)
-    camera.position.z = 32*Math.cos(time)
-    camera.position.y =0
+    camera.position.x =32*Math.sin(time)*Math.cos(rho)
+    camera.position.z = 32*Math.cos(time)*Math.cos(rho)
+    camera.position.y = 32*Math.sin(rho)
     renderer.render(scene, camera);
+    window.addEventListener("keydown",keydown_handler)
 }
+
+
+function keydown_handler(event){
+    if(event.keyCode==37){
+        time +=0.02
+    }else if(event.keyCode==39){
+        time -=0.02
+    }else if(event.keyCode==38){
+        rho+=0.02
+    }else if(event.keyCode==40){
+        rho-=0.02
+    }
+}
+
 
 axios.get("data.json").then(function(response){
     window.cl=response.data.data
