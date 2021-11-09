@@ -1,6 +1,8 @@
 /MachineLearning/MNISTClassActivationMap/model/*
 /MachineLearning/MNISTClassActivationMap/model_cam/*
 /MachineLearning/MNISTClassActivationMap/.idea/*
-/MachineLearning/MNISTGradientClassActivationMap/model_gradcam/*
-/MachineLearning/MNISTGradientClassActivationMap/.idea/*
+/MachineLearning/MNISTGradCAM/model_gradcam/*
+/MachineLearning/MNISTGradCAM/.idea/*
+/MachineLearning/MNISTGradCAMPlusPlus/.idea/*
+/MachineLearning/MNISTGradCAMPlusPlus/model_gradcam/*
 /ComputerGraphics/SpatialHeatMap/node_modules/*
