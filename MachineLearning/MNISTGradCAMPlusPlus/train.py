@@ -7,9 +7,8 @@ import numpy as np
 # Get Dataset
 mnist=tf.keras.datasets.mnist
 (x_train,y_train),(x_test,y_test)=mnist.load_data()
-x_test = np.expand_dims(tf.keras.utils.normalize(x_test,axis=1),axis=3)
-x_train = np.expand_dims(tf.keras.utils.normalize(x_train,axis=1),axis=3)
-
+x_test = np.expand_dims((x_test-127)/255,axis=3)
+x_train = np.expand_dims((x_train-127)/255,axis=3)
 # Define Model
 conv1 = tf.keras.layers.Conv2D(8,(3,3))
 actv1 = tf.keras.layers.ReLU()
@@ -30,7 +29,6 @@ x = conv2(x)
 x = actv2(x)
 x = pool2(x)
 x = flatten(x)
-x = dense1(x)
 x = dense2(x)
 x = dense3(x)
 x = softmax(x)
@@ -38,5 +36,5 @@ x = softmax(x)
 # Train
 model = tf.keras.Model(inputs=[input],outputs=[x])
 model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
-model.fit(x_train,y_train,epochs=10)
+model.fit(x_train,y_train,epochs=5)
 model.save("model_gradcam")

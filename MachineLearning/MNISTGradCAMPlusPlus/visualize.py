@@ -15,8 +15,8 @@ tf.disable_v2_behavior()
 # Get Dataset
 mnist=keras.datasets.mnist
 (x_train,y_train),(x_test,y_test)=mnist.load_data()
-x_test = np.expand_dims(keras.utils.normalize(x_test,axis=1),axis=3)
-x_train = np.expand_dims(keras.utils.normalize(x_train,axis=1),axis=3)
+x_test = np.expand_dims((x_test-127)/255,axis=3)
+x_train = np.expand_dims((x_train-127)/255,axis=3)
 
 # Define Model
 conv1 = keras.layers.Conv2D(8,(3,3))
@@ -26,7 +26,6 @@ conv2 = keras.layers.Conv2D(16,(5,5))
 actv2 = keras.layers.ReLU()
 pool2 = keras.layers.AvgPool2D()
 flatten = keras.layers.Flatten()
-dense1 = keras.layers.Dense(256)
 dense2 = keras.layers.Dense(64)
 dense3 = keras.layers.Dense(10)
 softmax = keras.layers.Softmax()
@@ -38,7 +37,6 @@ x = conv2(x)
 x = actv2(x)
 x = pool2(x)
 x = flatten(x)
-x = dense1(x)
 x = dense2(x)
 x = dense3(x)
 x = softmax(x)
@@ -50,10 +48,10 @@ model.summary()
 
 
 # Get Classification Score
-idx = 2525
+idx = 124
 sample = x_train[idx]
 sample_predict = model.predict(np.expand_dims(sample,axis=0),batch_size=1)
-fc_model = keras.Model(inputs=[input],outputs=[model.get_layer('dense_2').output])
+fc_model = keras.Model(inputs=[input],outputs=[model.get_layer('dense_1').output])
 fc_output = fc_model.predict(np.expand_dims(sample,axis=0),batch_size=1)
 fc_best = np.argmax(fc_output)
 
@@ -93,27 +91,31 @@ weight = np.zeros((feature))
 for k in range(feature):
     for i in range(conv_output.shape[0]):
         for j in range(conv_output.shape[1]):
-            if np.abs((2*grad_2[i,j,k]+feature_map_sum[k]*grad_3[i,j,k])) > np.finfo('float').eps:
-                weight[k]+=(grad_2[i,j,k])/(2*grad_2[i,j,k]+feature_map_sum[k]*grad_3[i,j,k])*relu(grad_1[i,j,k])
+            weight[k] += (grad_1[i, j, k])
+            #if np.abs((2*grad_2[i,j,k]+feature_map_sum[k]*grad_3[i,j,k])) > np.finfo('float').eps:
+            #    weight[k]+=(grad_2[i,j,k])/(2*grad_2[i,j,k]+feature_map_sum[k]*grad_3[i,j,k])*relu(grad_1[i,j,k])
 
 # Calculate GradCAM
 grad_cam = np.zeros((conv_output.shape[0],conv_output.shape[1])).astype("float32")
 feature = conv_output.shape[2]
-conv_output = conv_output.transpose(2,0,1)
-for i in range(feature):
+conv_output = (conv_output.transpose(2,0,1))
+filtered_feature = range(0,feature)
+#filtered_feature = [9]
+for i in filtered_feature:
     grad_cam = grad_cam + weight[i]*conv_output[i]
 
 # Apply heatmap
 inputx = np.expand_dims(sample.squeeze(), axis=2)
 rgb_img = np.concatenate((inputx, inputx, inputx), axis=2) * 255
 rgb_img = rgb_img.astype("int")
-heatmap = -grad_cam
+heatmap = (grad_cam)
 heatmap2 = ((heatmap - np.min(heatmap)) / (np.max(heatmap) - np.min(heatmap)) * 255).astype("uint8")
 heatmap3 = cv2.resize(heatmap2.astype("uint8"), (28, 28))
 heatmap3 = cv2.applyColorMap(heatmap3, cv2.COLORMAP_JET)
+heatmap3 = cv2.cvtColor(heatmap3, cv2.COLOR_BGR2RGB)
 mixed = heatmap3 * 0.4 + rgb_img * 0.6
 imagnew = np.uint8((mixed) * 205 / np.max(mixed) + 50)
 
 # Visualize Grad-CAM Plus Plus
-plt.imshow(imagnew)
+plt.imshow(heatmap3)
 plt.show()

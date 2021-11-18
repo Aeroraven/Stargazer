@@ -50,7 +50,7 @@ model.summary()
 
 
 # Get Classification Score
-idx = 2525
+idx = 4927
 sample = x_train[idx]
 sample_predict = model.predict(np.expand_dims(sample,axis=0),batch_size=1)
 fc_model = keras.Model(inputs=[input],outputs=[model.get_layer('dense_2').output])
@@ -85,7 +85,7 @@ for i in range(feature):
 inputx = np.expand_dims(sample.squeeze(),axis=2)
 rgb_img = np.concatenate((inputx,inputx,inputx),axis=2)*255
 rgb_img = rgb_img.astype("int")
-heatmap = grad_cam
+heatmap = -grad_cam
 heatmap2 = ((heatmap - np.min(heatmap))/(np.max(heatmap)-np.min(heatmap))*255).astype("uint8")
 heatmap3 = cv2.resize(heatmap2.astype("uint8"),(28,28))
 heatmap3 = cv2.applyColorMap(heatmap3, cv2.COLORMAP_JET)
