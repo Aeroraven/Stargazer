@@ -1,6 +1,6 @@
 ### Algorithm Exercise
 
-**Attempting: **
+**Attempting:**
 
 
 
