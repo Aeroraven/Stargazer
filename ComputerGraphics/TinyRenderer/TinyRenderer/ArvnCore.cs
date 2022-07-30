@@ -32,5 +32,27 @@ namespace TinyRenderer
             c = v / (float)w;
             a = 1 - b - c;
         }
+        static public void GetTriangleNormal(ArvnVec3f ta, ArvnVec3f tb, ArvnVec3f tc, out float dx, out float dy,out float dz)
+        {
+            float vx = tc.x - ta.x;
+            float vy = tc.y - ta.y;
+            float vz = tc.z - ta.z;
+            float ux = tb.x - ta.x;
+            float uy = tb.y - ta.y;
+            float uz = tb.z - ta.z;
+            CrossProduct(vx, vy, vz, ux, uy, uz, out dx, out dy, out dz);
+        }
+        static public void NormalizeVec3f(ref float x,ref float y,ref float z)
+        {
+            float sf = x * x + y * y + z * z;
+            sf = (float)Math.Sqrt(sf);
+            x /= sf;
+            y /= sf;
+            z /= sf;
+        }
+        static public float DotProduct(float x0,float y0,float z0,float x1,float y1,float z1)
+        {
+            return x0 * x1 + y0 * y1 + z0 * z1;
+        }
     }
 }

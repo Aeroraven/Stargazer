@@ -157,12 +157,18 @@ namespace TinyRenderer
 
         static void Lesson2S3P3()
         {
-
             //Lesson 2 Section 3 Part 3: Back Face Culling
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            Renderer.DrawFlatShadingV2(model, light, ref bitmap);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l2s3p3.bmp");
         }
         static void Main(string[] args)
         {
-            Lesson2S3P2();
+            Lesson2S3P3();
         }
     }
 }

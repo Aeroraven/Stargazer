@@ -288,5 +288,39 @@ namespace TinyRenderer
                 DrawTriangle(vx[0], vx[1], vx[2], RandomColorHex(), ref target);
             }
         }
+
+        static public void DrawFlatShadingV2(ArvnMesh model, ArvnVec3f lightDirection , ref ArvnImage target)
+        {
+            for (int i = 0; i < model.GetFaceNums(); i++)
+            {
+                int[] fidx = { 0, 0, 0 };
+                float t;
+                float[] dx = { 0, 0, 0 };
+                float[] dy = { 0, 0, 0 };
+                ArvnVec2i[] vx = { ArvnVec2i.Create(0, 0), ArvnVec2i.Create(0, 0), ArvnVec2i.Create(0, 0) };
+                ArvnVec3f[] sx = { ArvnVec3f.Create(), ArvnVec3f.Create(), ArvnVec3f.Create() };
+                model.GetFace(i, out fidx[0], out fidx[1], out fidx[2]);
+                for (int j = 0; j < 3; j++)
+                {
+                    model.GetVertex(fidx[j], out dx[j], out dy[j], out t);
+                    sx[j].x = dx[j];
+                    sx[j].y = dy[j];
+                    sx[j].z = t;
+                    vx[j].x = (int)((dx[j] + 1) / 2 * (target.GetWidth() - 1));
+                    vx[j].y = (int)((dy[j] + 1) / 2 * (target.GetWidth() - 1));
+                }
+                float nx, ny, nz;
+                ArvnCore.GetTriangleNormal(sx[0], sx[1], sx[2], out nx, out ny, out nz);
+                ArvnCore.NormalizeVec3f(ref nx, ref ny, ref nz);
+                float intensity = ArvnCore.DotProduct(nx, ny, nz, lightDirection.x, lightDirection.y, lightDirection.z);
+                if (intensity > 0)
+                {
+                    int it = (int)(intensity * 255);
+                    int cl = RGBToHex(it, it, it);
+                    DrawTriangle(vx[0], vx[1], vx[2], cl, ref target);
+                }
+                
+            }
+        }
     }
 }
