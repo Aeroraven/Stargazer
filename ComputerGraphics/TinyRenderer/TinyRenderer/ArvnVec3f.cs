@@ -13,7 +13,7 @@ namespace TinyRenderer
             this.y = y;
             this.z = z;
         }
-        static public ArvnVec3f Create(int x, int y, int z)
+        static public ArvnVec3f Create(float x, float y, float z)
         {
             ArvnVec3f t = new ArvnVec3f();
             t.x = x;

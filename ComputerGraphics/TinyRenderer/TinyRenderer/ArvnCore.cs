@@ -24,9 +24,17 @@ namespace TinyRenderer
             yc = z0 * x1 - x0 * z1;
             zc = x0 * y1 - y0 * x1;
         }
-        static public void ToBarycentric(int xs,int ys,int x0,int y0,int x1 ,int y1,int x2,int y2,out float a,out float b,out float c)
+        static public void ToBarycentric(int xs, int ys, int x0, int y0, int x1, int y1, int x2, int y2, out float a, out float b, out float c)
         {
             int u, v, w;
+            CrossProduct(x1 - x0, x2 - x0, x0 - xs, y1 - y0, y2 - y0, y0 - ys, out u, out v, out w);
+            b = u / (float)w;
+            c = v / (float)w;
+            a = 1 - b - c;
+        }
+        static public void ToBarycentric(float xs, float ys, float x0, float y0, float x1, float y1, float x2, float y2, out float a, out float b, out float c)
+        {
+            float u, v, w;
             CrossProduct(x1 - x0, x2 - x0, x0 - xs, y1 - y0, y2 - y0, y0 - ys, out u, out v, out w);
             b = u / (float)w;
             c = v / (float)w;

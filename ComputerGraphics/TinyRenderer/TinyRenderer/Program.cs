@@ -166,9 +166,62 @@ namespace TinyRenderer
             Renderer.DrawFlatShadingV2(model, light, ref bitmap);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l2s3p3.bmp");
         }
+
+        static void Lesson3S1P1()
+        {
+            //Lesson 3 Section 1 Part 1: 2D scene at sideway viewpoint
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            Renderer.DrawLineV5(20, 34, 744, 400, Renderer.RGBToHex(255, 0, 0), ref bitmap);
+            Renderer.DrawLineV5(120, 434, 444, 400, Renderer.RGBToHex(0, 255, 0), ref bitmap);
+            Renderer.DrawLineV5(330, 463, 594, 200, Renderer.RGBToHex(0, 0, 255), ref bitmap);
+            Renderer.DrawLineV5(10, 10, 790, 10, Renderer.RGBToHex(255, 255, 255), ref bitmap);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s1p1.bmp");
+
+        }
+        static void Lesson3S1P2()
+        {
+            //Lesson 3 Section 1 Part 2: Rasterize on 1D Screen
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 1);
+            int[] ybuffer;
+            Renderer.GenerateYBuffer(800, out ybuffer);
+            Renderer.Rasterize2D(20, 34, 744, 400, Renderer.RGBToHex(255, 0, 0), ref bitmap, ref ybuffer); 
+            Renderer.Rasterize2D(120, 434, 444, 400, Renderer.RGBToHex(0, 255, 0), ref bitmap, ref ybuffer);
+            Renderer.Rasterize2D(330, 463, 594, 200, Renderer.RGBToHex(0, 0, 255), ref bitmap, ref ybuffer);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s1p2.bmp");
+
+        }
+        static void Lesson3S2()
+        {
+            //Lesson 3 Section 2: Rasterize Mesh
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            Renderer.RasterizeFlatShading3D(model, light, ref bitmap,ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s2.bmp");
+        }
+
+        static void Lesson3S3()
+        {
+            //Lesson 3 Section 3: Attach diffuse texture
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+            Renderer.RasterizeFlatShadingTextured3D(model, light, texture, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s3.bmp");
+        }
         static void Main(string[] args)
         {
-            Lesson2S3P3();
+            Lesson3S3();
         }
     }
 }

@@ -14,6 +14,13 @@ namespace TinyRenderer
             SetHeight(h);
             image = new Bitmap(w, h);
         }
+
+        public override void Load(string path)
+        {
+            image = new Bitmap(path);
+            SetWidth(image.Width);
+            SetHeight(image.Height);
+        }
         public override int Get(int x, int y)
         {
             return image.GetPixel(x, (height - 1) - y).ToArgb();
