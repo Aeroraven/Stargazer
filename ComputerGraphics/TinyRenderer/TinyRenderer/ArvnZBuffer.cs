@@ -16,7 +16,7 @@ namespace TinyRenderer
             t.buf = new int[w * h];
             for(int i = 0; i < w * h; i++)
             {
-                t.buf[i] = ~0;
+                t.buf[i] = ~0x7fffffff;
             }
             t.width = w;
             t.height = h;
