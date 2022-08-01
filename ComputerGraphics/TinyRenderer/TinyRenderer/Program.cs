@@ -219,9 +219,116 @@ namespace TinyRenderer
             Renderer.RasterizeFlatShadingTextured3D(model, light, texture, ref bitmap, ref zbuf);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s3.bmp");
         }
+
+        static void Lesson4S1P1()
+        {
+            //Lesson 4 Section 1 Part 1: Perform scale transformation
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+            ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+
+            Renderer.DrawLineV5(0, 0, 0, 1, Renderer.RGBToHex(0, 255, 0), ref bitmap);
+            Renderer.DrawLineV5(0, 0, 1, 0, Renderer.RGBToHex(255, 0, 0), ref bitmap);
+            for(int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)p[i].x * 200 + 400, (int)p[i].y * 200 + 400, (int)p[(i+1)%p.Length].x * 200 + 400, (int)p[(i + 1) % p.Length].y * 200 + 400, Renderer.RGBToHex(255, 255, 255), ref bitmap);
+            }
+            for(int i = 0; i < p.Length; i++)
+            {
+                ArvnCore.CartesianLinearTransform2D(ArvnCore.ScaleTransformCartesian2D(0.5f), p[i].x, p[i].y, out q[i].x, out q[i].y);
+            }
+            for (int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)(q[i].x * 200 + 400), (int)(q[i].y * 200 + 400), (int)(q[(i + 1) % q.Length].x * 200 + 400), (int)(q[(i + 1) % q.Length].y * 200 + 400), Renderer.RGBToHex(255, 255, 0), ref bitmap);
+            }
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l4s1p1.bmp");
+        }
+
+        static void Lesson4S1P2()
+        {
+            //Lesson 4 Section 1 Part 2: Perform Composite transform
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+            ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+
+            Renderer.DrawLineV5(0, 0, 0, 1, Renderer.RGBToHex(0, 255, 0), ref bitmap);
+            Renderer.DrawLineV5(0, 0, 1, 0, Renderer.RGBToHex(255, 0, 0), ref bitmap);
+            for (int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)p[i].x * 200 + 400, (int)p[i].y * 200 + 400, (int)p[(i + 1) % p.Length].x * 200 + 400, (int)p[(i + 1) % p.Length].y * 200 + 400, Renderer.RGBToHex(255, 255, 255), ref bitmap);
+            }
+            for (int i = 0; i < p.Length; i++)
+            {
+                float[,] compose = ArvnCore.MatrixMultiply(ArvnCore.ScaleTransformCartesian2D(0.5f), ArvnCore.RotationTransformCartesian2D((float)Math.PI / 4));
+                ArvnCore.CartesianLinearTransform2D(compose, p[i].x, p[i].y, out q[i].x, out q[i].y);
+            }
+            for (int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)(q[i].x * 200 + 400), (int)(q[i].y * 200 + 400), (int)(q[(i + 1) % q.Length].x * 200 + 400), (int)(q[(i + 1) % q.Length].y * 200 + 400), Renderer.RGBToHex(255, 255, 0), ref bitmap);
+            }
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l4s1p2.bmp");
+        }
+
+        static void Lesson4S2P1()
+        {
+            //Lesson 4 Section 2 Part 1: Perform Composite transform in Homogeneous coordinate
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+            ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+
+            Renderer.DrawLineV5(0, 0, 0, 1, Renderer.RGBToHex(0, 255, 0), ref bitmap);
+            Renderer.DrawLineV5(0, 0, 1, 0, Renderer.RGBToHex(255, 0, 0), ref bitmap);
+            for (int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)p[i].x * 200 + 400, (int)p[i].y * 200 + 400, (int)p[(i + 1) % p.Length].x * 200 + 400, (int)p[(i + 1) % p.Length].y * 200 + 400, Renderer.RGBToHex(255, 255, 255), ref bitmap);
+            }
+            for (int i = 0; i < p.Length; i++)
+            {
+                float temp;
+                float[,] compose = ArvnCore.MatrixMultiply(ArvnCore.ScaleTransformHomogeneous2D(0.5f), ArvnCore.RotationTransformHomogeneous2D((float)Math.PI / 4));
+                ArvnCore.HomogeneousLinearTransform2D(compose, p[i].x, p[i].y, 1, out q[i].x, out q[i].y, out temp);
+            }
+            for (int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)(q[i].x * 200 + 400), (int)(q[i].y * 200 + 400), (int)(q[(i + 1) % q.Length].x * 200 + 400), (int)(q[(i + 1) % q.Length].y * 200 + 400), Renderer.RGBToHex(255, 255, 0), ref bitmap);
+            }
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l4s2p1.bmp");
+        }
+        static void Lesson4S2P2()
+        {
+            //Lesson 4 Section 2 Part 2: 2D Viewport
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+            ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
+            float[,] vp = ArvnCore.RectViewportMatrix2D(800, 800, 2, 2);
+            for (int i = 0; i < p.Length; i++)
+            {
+                ArvnCore.HomogeneousLinearTransform2DToCartesian(vp, p[i].x, p[i].y, 1, out q[i].x, out q[i].y);
+            }
+            for (int i = 0; i < p.Length; i++)
+            { 
+                Renderer.DrawLineV5((int)q[i].x, (int)q[i].y, (int)q[(i + 1) % p.Length].x, (int)q[(i + 1) % p.Length].y, Renderer.RGBToHex(255, 0, 0), ref bitmap);
+            }
+            float[,] composed = ArvnCore.MatrixMultiply(
+                vp,
+                ArvnCore.ScaleTransformHomogeneous2D(0.5f), 
+                ArvnCore.RotationTransformHomogeneous2D((float)Math.PI / 4));
+
+            for (int i = 0; i < p.Length; i++)
+            {
+                ArvnCore.HomogeneousLinearTransform2DToCartesian(composed, p[i].x, p[i].y, 1, out q[i].x, out q[i].y);
+            }
+            for (int i = 0; i < p.Length; i++)
+            {
+                Renderer.DrawLineV5((int)q[i].x, (int)q[i].y, (int)q[(i + 1) % p.Length].x, (int)q[(i + 1) % p.Length].y, Renderer.RGBToHex(255, 255, 0), ref bitmap);
+            }
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l4s2p2.bmp");
+        }
         static void Main(string[] args)
         {
-            Lesson3S3();
+            Lesson4S2P2();
         }
     }
 }
