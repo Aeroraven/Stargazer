@@ -66,6 +66,22 @@ namespace TinyRenderer
         {
             return x0 * x1 + y0 * y1 + z0 * z1;
         }
+        static public float DotProduct(float[] a,float [] b)
+        {
+            float ret = 0f;
+            for(int i = 0; i < a.Length; i++)
+            {
+                ret += a[i] * b[i];
+            }
+            return ret;
+        }
+        static public void CartesianLinearTransform2D(float[,] t, float x, float y, out float[] o)
+        {
+            o = new float[2];
+            CartesianLinearTransform2D(t, x, y, out o[0], out o[1]);
+        }
+
+
         static public void CartesianLinearTransform2D(float[,] t,float x,float y,out float ox, out float oy)
         {
             //Order: F=TX
@@ -102,6 +118,17 @@ namespace TinyRenderer
             oy = t[1, 0] * x + t[1, 1] * y + t[1, 2] * z + t[1, 3] * w;
             oz = t[2, 0] * x + t[2, 1] * y + t[2, 2] * z + t[2, 3] * w;
             ow = t[3, 0] * x + t[3, 1] * y + t[3, 2] * z + t[3, 3] * w;
+        }
+        static public void HomogeneousLinearTransform3DToCartesian(float[,] t, float x, float y, float z, float w, out float ox, out float oy, out float oz)
+        {
+            //Order: F=TX
+            ox = t[0, 0] * x + t[0, 1] * y + t[0, 2] * z + t[0, 3] * w;
+            oy = t[1, 0] * x + t[1, 1] * y + t[1, 2] * z + t[1, 3] * w;
+            oz = t[2, 0] * x + t[2, 1] * y + t[2, 2] * z + t[2, 3] * w;
+            float ow = t[3, 0] * x + t[3, 1] * y + t[3, 2] * z + t[3, 3] * w;
+            ox /= ow;
+            oy /= ow;
+            oz /= ow;
         }
         static public void MatrixMultiplyI(float[,] a, float[,] b, out float[,] c)
         {
@@ -249,6 +276,23 @@ namespace TinyRenderer
             m[1, 2] = h / 2;
             return m;
         }
+        static public float[,] RectViewportMatrix3D(float w, float h, float vw, float vh)
+        {
+            float[,] m = new float[4, 4];
+            for (int i = 0; i < 16; i++)
+            {
+                m[i / 4, i % 4] = 0;
+            }
+            float wscale = w / 2 / vw;
+            float hscale = h / 2 / vh;
+            m[0, 0] = wscale;
+            m[1, 1] = hscale;
+            m[2, 2] = 1;
+            m[3, 3] = 1;
+            m[0, 3] = w / 2;
+            m[1, 3] = h / 2;
+            return m;
+        }
         static public float[,] IdentityMatrix(int order)
         {
             float[,] m = new float[order, order];
@@ -261,6 +305,28 @@ namespace TinyRenderer
                 m[i, i] = 1;
             }
             return m;
+        }
+
+        static public int RGBToHex(int r, int g, int b)
+        {
+            if (r > 255 || g > 255 || b > 255 || r < 0 || g < 0 || b < 0)
+            {
+                throw new ArvnCoreException("Invalid range");
+            }
+            return (0xff << 24) | (r << 16) | (g << 8) | b;
+        }
+        static public int RGBScale(int hex, float modf)
+        {
+            int r = (int)((((0xff << 16) & hex) >> 16) * modf);
+            int g = (int)((((0xff << 8) & hex) >> 8) * modf);
+            int b = (int)((((0xff << 0) & hex) >> 0) * modf);
+            return RGBToHex(r, g, b);
+
+        }
+        static public int RandomColorHex()
+        {
+            Random rd = new Random();
+            return RGBToHex(rd.Next(0, 255), rd.Next(0, 255), rd.Next(0, 255));
         }
 
     }

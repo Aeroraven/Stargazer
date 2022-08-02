@@ -216,7 +216,7 @@ namespace TinyRenderer
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
             ArvnImage texture = new ArvnImageBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
-            Renderer.RasterizeFlatShadingTextured3D(model, light, texture, ref bitmap, ref zbuf);
+            Renderer.RasterizeFlatShadingTextured3D(model, light, texture, ref bitmap, ref zbuf, false, null, null);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s3.bmp");
         }
 
@@ -326,9 +326,64 @@ namespace TinyRenderer
             }
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l4s2p2.bmp");
         }
+
+        static public void Lesson4S3()
+        {
+            //Lesson 4 Section 3: Project in 3D
+
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+            float[,] projection = ArvnCore.IdentityMatrix(4);
+            projection[3, 2] = -1;
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+
+            Renderer.RasterizeFlatShadingTextured3D(model, light, texture, ref bitmap, ref zbuf, true, projection, viewport);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l4s3.bmp");
+        }
+
+        static public void Lesson6S1()
+        {
+            //Lesson 6 Section 1: Shader & Refactoring
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+
+            //Shader
+            ArvnShader shader = new ArvnTinyShader();
+            float[] light = { 0, 0, 1 };
+            float[,] projection = ArvnCore.IdentityMatrix(4);
+            float[,] modelview = ArvnCore.IdentityMatrix(4);
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+            shader.SetVariable("lightdir", light);
+
+            //Attributes
+            object[] vertex = model.ExportVertices();
+            object[] vertexNormal = model.ExportVertexNormals();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+            shader.SetAttributeVariable("vnormals", vertexNormal);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s1.bmp");
+        }
         static void Main(string[] args)
         {
-            Lesson4S2P2();
+            Lesson6S1();
         }
     }
 }

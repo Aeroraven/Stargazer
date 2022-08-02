@@ -15,7 +15,6 @@ namespace TinyRenderer
         abstract public void SetWidth(int x);
         abstract public int GetWidth();
         abstract public void Save(string path);
-
         abstract public void Load(string path);
 
     }

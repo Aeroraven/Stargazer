@@ -6,17 +6,17 @@ namespace TinyRenderer
 {
     class ArvnZBuffer
     {
-        private int[] buf;
+        private float[] buf;
         private int width;
         private int height;
 
         static public ArvnZBuffer Create(int w,int h)
         {
             ArvnZBuffer t = new ArvnZBuffer();
-            t.buf = new int[w * h];
+            t.buf = new float[w * h];
             for(int i = 0; i < w * h; i++)
             {
-                t.buf[i] = ~0x7fffffff;
+                t.buf[i] = -1e30f;
             }
             t.width = w;
             t.height = h;
@@ -24,11 +24,11 @@ namespace TinyRenderer
         }
         private ArvnZBuffer() { }
 
-        public void Set(int x,int y,int v)
+        public void Set(int x,int y, float v)
         {
             buf[y * width + x] = v;
         }
-        public int Get(int x,int y)
+        public float Get(int x,int y)
         {
             return buf[y * width + x];
         }
