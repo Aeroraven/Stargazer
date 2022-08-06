@@ -8,6 +8,19 @@ namespace TinyRenderer
     class ArvnTinyShaderV3 : ArvnShader
     {
         private float[,] pm;
+        private float[,] pmi;
+        private float[,] modelview;
+        private float[,] projection;
+        private float[,] viewport;
+        private float[] lightdir;
+        private float[] lightdir_t;
+
+        private float[,] transformed;
+        private float[,] transformed_ndc;
+
+        private ArvnImage diffuseTexture;
+        private ArvnImage specTexture;
+        private ArvnImage normalTexture;
         public ArvnTinyShaderV3() : base()
         {
             //Uniforms
@@ -38,12 +51,29 @@ namespace TinyRenderer
         {
             if (FindIsUniformChanged())
             {
-                float[,] projection = (float[,])GetVariable("projection");
-                float[,] model = (float[,])GetVariable("modelview");
-                pm = ArvnCore.MatrixMultiply(ArvnCore.IdentityMatrix(4), model);
-                float[,] pmi = ArvnCore.InverseTransposedMatrix(pm);
+                float temp;
+                viewport = (float[,])GetVariable("viewport");
+                modelview = (float[,])GetVariable("modelview");
+                projection = (float[,])GetVariable("projection");
+                lightdir = (float[])GetVariable("lightdir");
+                transformed = ArvnCore.MatrixMultiply(viewport, projection, modelview);
+                transformed_ndc = ArvnCore.MatrixMultiply(projection, modelview);
+
+                pm = ArvnCore.MatrixMultiply(ArvnCore.IdentityMatrix(4), modelview);
+                pmi = ArvnCore.InverseTransposedMatrix(pm);
                 SetVariable("projection_model", pm);
                 SetVariable("projection_model_inverse", pmi);
+
+                lightdir_t = new float[3];
+                ArvnCore.HomogeneousLinearTransform3D(pm, lightdir[0], lightdir[1], lightdir[2], 0, out lightdir_t[0], out lightdir_t[1], out lightdir_t[2], out temp);
+                lightdir_t = ArvnCore.Normalize(lightdir_t);
+
+                
+
+                diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
+                specTexture = (ArvnImage)GetVariable("spec_texture");
+                normalTexture = (ArvnImage)GetVariable("normal_texture");
+
                 SetUniformChangedState();
             }
         }
@@ -52,20 +82,7 @@ namespace TinyRenderer
         {
             ComputeDerivedUniforms();
 
-            float[,] pm = (float[,])GetVariable("projection_model");
-            float[,] pmi = (float[,])GetVariable("projection_model_inverse");
-            ArvnImage diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
-            ArvnImage specTexture = (ArvnImage)GetVariable("spec_texture");
-            ArvnImage normalTexture = (ArvnImage)GetVariable("normal_texture");
-
-            float[] lightdir_t = new float[3];
-            float[] relightdir_t = new float[3];
-            float temp;
-
-            //Light
-            float[] lightdir = (float[])GetVariable("lightdir");
-            ArvnCore.HomogeneousLinearTransform3D(pm, lightdir[0], lightdir[1], lightdir[2], 0, out lightdir_t[0], out lightdir_t[1], out lightdir_t[2], out temp);
-            lightdir_t = ArvnCore.Normalize(lightdir_t);
+            float temp;            
 
             //Texture Interpolation
             float uvx = 0, uvy = 0;
@@ -79,7 +96,6 @@ namespace TinyRenderer
 
             //Face Normal
             float[] oNormal = new float[3];
-            float intensity = 0;
             for (int i = 0; i < 3; i++)
             {
                 float[] normal = (float[])GetVaryingVariable("diffuse_uv_normal", i);
@@ -111,7 +127,7 @@ namespace TinyRenderer
             ArvnCore.NormalizeSelf(ref tNormal);
 
             //Diffuse
-            intensity = Math.Max(0f, ArvnCore.DotProduct(tNormal, lightdir_t));
+            float intensity = Math.Max(0f, ArvnCore.DotProduct(tNormal, lightdir_t));
 
 
             //Specular
@@ -143,19 +159,10 @@ namespace TinyRenderer
         public override void VertexShader(int index, int vindex, params object[] input)
         {
             ComputeDerivedUniforms();
-            float[,] viewport = (float[,])GetVariable("viewport");
-            float[,] projection = (float[,])GetVariable("projection");
-            float[,] model = (float[,])GetVariable("modelview");
-            float[] lightdir = (float[])GetVariable("lightdir");
 
             float[] vertex = (float[])GetAttributeVariable("vertices")[index];
             float[] vertexp = new float[4];
             float[] vertexpp = new float[3];
-            float[] normal = (float[])GetAttributeVariable("vnormals")[index];
-
-
-            float[,] transformed = ArvnCore.MatrixMultiply(viewport, projection, model);
-            float[,] transformed_ndc = ArvnCore.MatrixMultiply(projection, model);
 
             ArvnCore.HomogeneousLinearTransform3DToCartesian(transformed, vertex[0], vertex[1], vertex[2], 1, out vertexp[0], out vertexp[1], out vertexp[2]);
             vertexp[3] = 1;
