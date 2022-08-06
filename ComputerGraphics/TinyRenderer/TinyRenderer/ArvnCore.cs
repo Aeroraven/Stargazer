@@ -564,7 +564,10 @@ namespace TinyRenderer
 
         static public float[,] TangentSpaceBaseMatrix(float[] a, float[] b, float[] c, float[] n, float[] ta, float[] tb, float[] tc)
         {
-            
+            if (Math.Abs(Distance(n) - 1) > 1e-6)
+            {
+                throw new Exception("Unnormalized normal");
+            }
             float[,] intmat = new float[3, 3];
             float[,] intmatn;
             for (int i = 0; i < 3; i++)
@@ -587,9 +590,9 @@ namespace TinyRenderer
 
             for (int i = 0; i < 3; i++)
             {
-                intmat[0, i] = x[i];
-                intmat[1, i] = y[i];
-                intmat[2, i] = z[i];
+                intmat[i, 0] = x[i];
+                intmat[i, 1] = y[i];
+                intmat[i, 2] = z[i];
             }
             return intmat;
         }

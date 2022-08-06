@@ -526,8 +526,8 @@ namespace TinyRenderer
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             //float[,] projection = ArvnCore.IdentityMatrix(4);
-            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 3 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
-            float[,] viewport = ArvnCore.RectViewportMatrix3D(799, 799, 1, 1);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
             shader.SetVariable("projection", projection);
             shader.SetVariable("modelview", modelview);
             shader.SetVariable("viewport", viewport);

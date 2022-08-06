@@ -107,14 +107,12 @@ namespace TinyRenderer
             tnr = tnr * 2 - 1;
             tng = tng * 2 - 1;
             tnb = tnb * 2 - 1;
-            ArvnCore.CartesianLinearTransform3D(tsTransform, tnb, tng, tnr, out tNormal[0], out tNormal[1], out tNormal[2]);
+            ArvnCore.CartesianLinearTransform3D(tsTransform, tnr, tng, tnb, out tNormal[0], out tNormal[1], out tNormal[2]);
             ArvnCore.NormalizeSelf(ref tNormal);
 
             //Diffuse
-            for (int i = 0; i < 3; i++)
-            {
-                intensity += barycenterCoord[i] * Math.Max(0f, ArvnCore.DotProduct(tNormal, lightdir_t));
-            }
+            intensity = Math.Max(0f, ArvnCore.DotProduct(tNormal, lightdir_t));
+
 
             //Specular
             float[] specLight = ArvnCore.SpecularReflection(lightdir_t, tNormal);
@@ -135,8 +133,8 @@ namespace TinyRenderer
             //Light Model
             for (int i = 0; i < 3; i++)
             {
-                //color[i] = Math.Min(1.0f, 0.02f + color[i] * (1.0f * intensity + 0.2f * specPower));
-                color[i] = Math.Min(1.0f, color[i] * intensity);
+                color[i] = Math.Min(1.0f, 0.02f + color[i] * (0.78f * intensity + 0.2f * specPower));
+                //color[i] = Math.Min(1.0f, color[i] * intensity);
             }
 
             SetVariable("arFragColor", color);
@@ -170,7 +168,7 @@ namespace TinyRenderer
             SetVaryingVariable("diffuse_uv_normal", vindex, new float[] { vnormal[0], vnormal[1], vnormal[2] });
 
             ArvnCore.HomogeneousLinearTransform3DToCartesian(transformed_ndc, vertex[0], vertex[1], vertex[2], 1, out vertexpp[0], out vertexpp[1], out vertexpp[2]);
-            SetVaryingVariable("ndc_v", vindex, vertexpp);
+            SetVaryingVariable("ndc_v", vindex, new float[] { vertexpp[0], vertexpp[1], vertexpp[2] });
         }
     }
 }
