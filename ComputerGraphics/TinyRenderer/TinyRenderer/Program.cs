@@ -553,7 +553,7 @@ namespace TinyRenderer
 
         public static void Lesson7S1()
         {
-            //Lesson 7 Section 1: Depth shader
+            //Lesson 7 Section 1: Depth Shader
 
             //Environment
             ArvnImage bitmap = new ArvnImageBitmap(800, 800);
