@@ -98,7 +98,7 @@ namespace TinyRenderer
                     if (ta >= 0 && tb >= 0 & tc >= 0)
                     {
                         float zv = (float)(ta * t0.z + tb * t1.z + tc * t2.z);
-                        shader.FragmentShader();
+                        shader.FragmentShader(new float[] { ta, tb, tc });
                         float[] color = (float[])shader.GetVariable("arFragColor");
                         int hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
                         if (zbuf.Get(i, j) < zv)

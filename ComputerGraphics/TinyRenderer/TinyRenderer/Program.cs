@@ -348,7 +348,7 @@ namespace TinyRenderer
 
         static public void Lesson6S1()
         {
-            //Lesson 6 Section 1: Shader & Refactoring
+            //Lesson 5~6 Section 1: Shader & Refactoring & Vertex Normal
 
             //Environment
             ArvnImage bitmap = new ArvnImageBitmap(800, 800);
@@ -357,6 +357,7 @@ namespace TinyRenderer
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
             ArvnImage texture = new ArvnImageBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+            
 
             //Shader
             ArvnShader shader = new ArvnTinyShader();
@@ -381,9 +382,177 @@ namespace TinyRenderer
             renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s1.bmp");
         }
+
+        static public void Lesson6S2()
+        {
+            //Lesson 5~6 Section 2: Look At & Projection
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+
+            //Shader
+            ArvnShader shader = new ArvnTinyShader();
+            float[] light = ArvnCore.Normalize(new float[]{ 1, 1, 1 });
+            float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            //float[,] projection = ArvnCore.IdentityMatrix(4);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+            shader.SetVariable("lightdir", light);
+
+            //Attributes
+            object[] vertex = model.ExportVertices();
+            object[] vertexNormal = model.ExportVertexNormals();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+            shader.SetAttributeVariable("vnormals", vertexNormal);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s2.bmp");
+        }
+
+        static public void Lesson6S3()
+        {
+            //Lesson 6 Section 3: Attach texture using shader
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+
+            //Shader
+            ArvnShader shader = new ArvnTinyShader();
+            float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
+            float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            //float[,] projection = ArvnCore.IdentityMatrix(4);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+            shader.SetVariable("lightdir", light);
+            shader.SetVariable("version", 2);
+            shader.SetVariable("diffuse_texture", texture);
+
+
+            //Attributes
+            object[] vertex = model.ExportVertices();
+            object[] vertexNormal = model.ExportVertexNormals();
+            object[] vertexTexture = model.ExportVertexTexture();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+            shader.SetAttributeVariable("vnormals", vertexNormal);
+            shader.SetAttributeVariable("vtexture", vertexTexture);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s3.bmp");
+        }
+
+        static public void Lesson6S4()
+        {
+            //Lesson 6 Section 4: Transform of normals & Specular mapping
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+            ArvnImage specularTexture = new ArvnImageBitmap(50, 50);
+            specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
+
+            //Shader
+            ArvnShader shader = new ArvnTinyShaderV2();
+            float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
+            float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            //float[,] projection = ArvnCore.IdentityMatrix(4);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+            shader.SetVariable("lightdir", light);
+            shader.SetVariable("diffuse_texture", texture);
+            shader.SetVariable("spec_texture", specularTexture);
+
+            //Attributes
+            object[] vertex = model.ExportVertices();
+            object[] vertexNormal = model.ExportVertexNormals();
+            object[] vertexTexture = model.ExportVertexTexture();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+            shader.SetAttributeVariable("vnormals", vertexNormal);
+            shader.SetAttributeVariable("vtexture", vertexTexture);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s4.bmp");
+        }
+
+        static public void Lesson6S5()
+        {
+            //Lesson 6 Section 5 : Tangent space & Normal mapping
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+            ArvnImage specularTexture = new ArvnImageBitmap(50, 50);
+            specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
+            ArvnImage normalTexture = new ArvnImageBitmap(50, 50);
+            normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
+
+            //Shader
+            ArvnShader shader = new ArvnTinyShaderV3();
+            float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
+            float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            //float[,] projection = ArvnCore.IdentityMatrix(4);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 3 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(799, 799, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+            shader.SetVariable("lightdir", light);
+            shader.SetVariable("diffuse_texture", texture);
+            shader.SetVariable("spec_texture", specularTexture);
+            shader.SetVariable("normal_texture", normalTexture);
+
+            //Attributes
+            object[] vertex = model.ExportVertices();
+            object[] vertexNormal = model.ExportVertexNormals();
+            object[] vertexTexture = model.ExportVertexTexture();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+            shader.SetAttributeVariable("vnormals", vertexNormal);
+            shader.SetAttributeVariable("vtexture", vertexTexture);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s5.bmp");
+        }
         static void Main(string[] args)
         {
-            Lesson6S1();
+            Lesson6S5();
         }
     }
 }

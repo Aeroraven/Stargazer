@@ -21,6 +21,8 @@ namespace TinyRenderer
 
         protected Dictionary<string, object[]> attributeList = new Dictionary<string, object[]>();
         protected Dictionary<string, string> attributeTypeList = new Dictionary<string, string>();
+
+        private bool uniformChanged = false;
         protected int GetVertexNums()
         {
             int f = -1;
@@ -48,6 +50,14 @@ namespace TinyRenderer
         {
             DefineVariable("arPosition", "vec4f", new float[4] { 0, 0, 0, 0 });
             DefineVariable("arFragColor", "vec4f", new float[4] { 0, 0, 0, 0 });
+        }
+        public bool FindIsUniformChanged()
+        {
+            return uniformChanged;
+        }
+        public void SetUniformChangedState()
+        {
+            uniformChanged = false;
         }
         public void SetAttributeVariable(string varName,object[] value)
         {
@@ -113,10 +123,12 @@ namespace TinyRenderer
         }
         protected void SetVariableUnsafe(string varName,object value)
         {
+            uniformChanged = true;
             varList[varName] = value;
         }
         public void SetVariable(string varName,object value)
         {
+            uniformChanged = true;
             if (CheckVariable(typeList[varName], value))
             {
                 varList[varName] = value;
@@ -188,9 +200,18 @@ namespace TinyRenderer
                     return true;
                 }
             }
+            //Texture
+            if (typeName == "sampler2d")
+            {
+                if(value is ArvnImage)
+                {
+                    return true;
+                }
+            }
             return false;
         }
         abstract public void VertexShader(int index,int vindex, params object[] input);
-        abstract public void FragmentShader(params object[] input);
+        abstract public void FragmentShader(float[] barycenterCoord, params object[] input);
+        abstract public void ComputeDerivedUniforms();
     }
 }

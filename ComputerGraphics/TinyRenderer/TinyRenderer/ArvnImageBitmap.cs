@@ -14,7 +14,15 @@ namespace TinyRenderer
             SetHeight(h);
             image = new Bitmap(w, h);
         }
-
+        public override void GetInNormalized(float x, float y, out float r, out float g, out float b)
+        {
+            int hex = GetInNormalized(x, y);
+            int ir, ig, ib;
+            ArvnCore.HexToRGB(hex, out ir, out ig, out ib);
+            r = ir / 255f;
+            g = ig / 255f;
+            b = ib / 255f;
+        }
         public override void Load(string path)
         {
             image = new Bitmap(path);
@@ -25,7 +33,10 @@ namespace TinyRenderer
         {
             return image.GetPixel(x, (height - 1) - y).ToArgb();
         }
-
+        public override int GetInNormalized(float x, float y)
+        {
+            return Get((int)(x * (width - 1)), (int)(y * (height - 1)));
+        }
         public override int GetHeight()
         {
             return image.Height;

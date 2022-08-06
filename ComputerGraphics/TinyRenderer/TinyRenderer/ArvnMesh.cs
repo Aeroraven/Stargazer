@@ -19,19 +19,49 @@ namespace TinyRenderer
         private int vnNums = 0;
         public object[] ExportVertices()
         {
-            object[] ret = new object[vertices.Count / 3];
-            for(int i = 0; i < vertices.Count / 3; i++)
+            object[] ret = new object[faces.Count ];
+            for(int i = 0; i < faces.Count / 3 ; i++)
             {
-                ret[i] = new float[3] { vertices[3 * i], vertices[3 * i + 1], vertices[3 * i + 2] };
+                int a, b, c;
+                GetFace(i, out a, out b, out c);
+                a--;
+                b--;
+                c--;
+                ret[i * 3] = new float[3] { vertices[3 * a], vertices[3 * a + 1], vertices[3 * a + 2] };
+                ret[i * 3 + 1] = new float[3] { vertices[3 * b], vertices[3 * b + 1], vertices[3 * b + 2] };
+                ret[i * 3 + 2] = new float[3] { vertices[3 * c], vertices[3 * c + 1], vertices[3 * c + 2] };
             }
             return ret;
         }
         public object[] ExportVertexNormals()
         {
-            object[] ret = new object[vertexNormals.Count / 3];
-            for (int i = 0; i < vertexNormals.Count / 3; i++)
+            object[] ret = new object[faces.Count];
+            for (int i = 0; i < faces.Count / 3; i++)
             {
-                ret[i] = new float[3] { vertexNormals[3 * i], vertexNormals[3 * i + 1], vertexNormals[3 * i + 2] };
+                int a, b, c;
+                GetFace(i, out a, out b, out c);
+                a--;
+                b--;
+                c--;
+                ret[i * 3] = new float[3] { vertexNormals[3 * a], vertexNormals[3 * a + 1], vertexNormals[3 * a + 2] };
+                ret[i * 3 + 1] = new float[3] { vertexNormals[3 * b], vertexNormals[3 * b + 1], vertexNormals[3 * b + 2] };
+                ret[i * 3 + 2] = new float[3] { vertexNormals[3 * c], vertexNormals[3 * c + 1], vertexNormals[3 * c + 2] };
+            }
+            return ret;
+        }
+        public object[] ExportVertexTexture()
+        {
+            object[] ret = new object[faces.Count];
+            for (int i = 0; i < faces.Count / 3; i++)
+            {
+                int a, b, c;
+                GetFaceVertexIdx(i, out a, out b, out c);
+                a--;
+                b--;
+                c--;
+                ret[i * 3] = new float[3] { textureVertices[3 * a], textureVertices[3 * a + 1], textureVertices[3 * a + 2] };
+                ret[i * 3 + 1] = new float[3] { textureVertices[3 * b], textureVertices[3 * b + 1], textureVertices[3 * b + 2] };
+                ret[i * 3 + 2] = new float[3] { textureVertices[3 * c], textureVertices[3 * c + 1], textureVertices[3 * c + 2] };
             }
             return ret;
         }
@@ -40,7 +70,7 @@ namespace TinyRenderer
             int[] idx = new int[faces.Count];
             for(int i=0;i< faces.Count; i++)
             {
-                idx[i] = faces[i] - 1;
+                idx[i] = i;
             }
             return idx;
         }
