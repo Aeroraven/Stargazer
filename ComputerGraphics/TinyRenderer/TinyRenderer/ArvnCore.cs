@@ -596,5 +596,13 @@ namespace TinyRenderer
             }
             return intmat;
         }
+        static public float[,] ZOrthoProjectionMatrix(float zNear,float zFar)
+        {
+            float[,] ret = IdentityMatrix(4);
+            ret[2, 2] = -2 / (zNear - zFar);
+            ret[2, 3] = -(zNear + zFar) / (zNear - zFar);
+            return ret;
+        }
+        
     }
 }

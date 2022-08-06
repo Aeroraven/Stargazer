@@ -68,8 +68,6 @@ namespace TinyRenderer
                 ArvnCore.HomogeneousLinearTransform3D(pm, lightdir[0], lightdir[1], lightdir[2], 0, out lightdir_t[0], out lightdir_t[1], out lightdir_t[2], out temp);
                 lightdir_t = ArvnCore.Normalize(lightdir_t);
 
-                
-
                 diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
                 specTexture = (ArvnImage)GetVariable("spec_texture");
                 normalTexture = (ArvnImage)GetVariable("normal_texture");

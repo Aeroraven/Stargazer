@@ -550,9 +550,48 @@ namespace TinyRenderer
             renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l6s5.bmp");
         }
+
+        public static void Lesson7S1()
+        {
+            //Lesson 7 Section 1: Depth shader
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+
+            //Shader
+            ArvnShader shader = new ArvnDepthShader();
+            float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
+            //float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            float[,] projection = ArvnCore.ZOrthoProjectionMatrix(0.01f,3);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 1 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+
+            //Attribute
+            object[] vertex = model.ExportVertices();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l7s1.bmp");
+        }
+
+        public static void Lesson7S2()
+        {
+            //Lesson 7 Section 2: Shadow Mapping
+
+        }
+        
         static void Main(string[] args)
         {
-            Lesson6S5();
+            Lesson7S1();
         }
     }
 }
