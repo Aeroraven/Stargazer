@@ -127,7 +127,6 @@ namespace TinyRenderer.Shaders
             //Diffuse
             float intensity = Math.Max(0f, ArvnCore.DotProduct(tNormal, lightdir_t));
 
-
             //Specular
             float[] specLight = ArvnCore.SpecularReflection(lightdir_t, tNormal);
             int specHex = specTexture.GetInNormalized(uvx, uvy);

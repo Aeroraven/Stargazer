@@ -651,7 +651,7 @@ namespace TinyRenderer
             renderer.RasterizeTriangles3D(faceIndices, ref shadowShader, ref bitmap, ref zBuf);
 
             //Save
-            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l7s2.bmp");
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l7s2b.bmp");
 
         }
 

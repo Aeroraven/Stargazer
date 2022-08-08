@@ -128,6 +128,24 @@ namespace TinyRenderer.Shaders
             ArvnCore.CartesianLinearTransform3D(tsTransform, tnr, tng, tnb, out tNormal[0], out tNormal[1], out tNormal[2]);
             ArvnCore.NormalizeSelf(ref tNormal);
 
+            //Shadow Mapping
+            float cvx = 0, cvy = 0, cvz = 0;
+            float cvxt, cvyt, cvzt;
+            for(int i = 0; i < 3; i++)
+            {
+                cvx += ((float[])GetVaryingVariable("ndc_v", i))[0] * barycenterCoord[i];
+                cvy += ((float[])GetVaryingVariable("ndc_v", i))[1] * barycenterCoord[i];
+                cvz += ((float[])GetVaryingVariable("ndc_v", i))[2] * barycenterCoord[i];
+            }
+            ArvnCore.HomogeneousLinearTransform3DToCartesian(depthRemap, cvx, cvy, cvz, 1, out cvxt, out cvyt, out cvzt);
+            float shadowDepth, shadowIntensity;
+            int sr, sg, sb;
+            int shadowMapColor = depthMap.Get((int)cvxt, (int)cvyt);
+            ArvnCore.HexToRGB(shadowMapColor, out sr, out sg, out sb);
+            shadowDepth = (sr / 255f) * 2f - 1f;
+            shadowIntensity = 0.3f + ((shadowDepth < cvzt) ? 0.7f : 0.0f);
+
+
             //Diffuse
             float intensity = Math.Max(0f, ArvnCore.DotProduct(tNormal, lightdir_t));
 
@@ -151,7 +169,7 @@ namespace TinyRenderer.Shaders
             //Light Model
             for (int i = 0; i < 3; i++)
             {
-                color[i] = Math.Min(1.0f, 0.02f + color[i] * (0.78f * intensity + 0.2f * specPower));
+                color[i] = Math.Min(1.0f, 0.02f + color[i] * shadowIntensity * (0.78f * intensity + 0.2f * specPower));
                 //color[i] = Math.Min(1.0f, color[i] * intensity);
             }
 
