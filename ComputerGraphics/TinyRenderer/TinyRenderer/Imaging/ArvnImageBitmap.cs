@@ -66,5 +66,17 @@ namespace TinyRenderer
         {
             image.Save(path);
         }
+
+        public override float[] GetInNormalizedEx(float x, float y)
+        {
+            float r, g, b;
+            int hex = GetInNormalized(x, y);
+            int ir, ig, ib;
+            ArvnCore.HexToRGB(hex, out ir, out ig, out ib);
+            r = ir / 255f;
+            g = ig / 255f;
+            b = ib / 255f;
+            return new float[] { r, g, b };
+        }
     }
 }

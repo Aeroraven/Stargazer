@@ -5,7 +5,7 @@ using System.Text;
 namespace TinyRenderer.Shaders
 {
     //Shader Using Phong Shading
-    class ArvnTinyShaderV2 : ArvnShader
+    class ArvnTinyShaderV2 : ArvnCompatibleShader
     {
         private float[,] pm;
         public ArvnTinyShaderV2() : base()

@@ -49,7 +49,16 @@ namespace TinyRenderer
                 }
             }
         }
-        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnShader shader,ref ArvnImage target, ref ArvnZBuffer zbuf)
+        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnCompatibleShader shader, ref ArvnImage target, ref ArvnZBuffer zbuf) { 
+            IArvnShaderCaller caller = shader;
+            RasterizeTriangles3D(faceIndex, ref caller, ref target, ref zbuf);
+        }
+        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnShader shader, ref ArvnImage target, ref ArvnZBuffer zbuf)
+        {
+            IArvnShaderCaller caller = shader;
+            RasterizeTriangles3D(faceIndex, ref caller, ref target, ref zbuf);
+        }
+        public void RasterizeTriangles3D(int[] faceIndex, ref IArvnShaderCaller shader,ref ArvnImage target, ref ArvnZBuffer zbuf)
         {
             for(int i = 0; i < faceIndex.Length; i+=3)
             {
@@ -62,11 +71,11 @@ namespace TinyRenderer
                 TriangleFragProcess3D(v[0], v[1], v[2], ref shader, ref target, ref zbuf);
             }
         }
-        protected void TriangleFragProcess3D(float[] t0,float[] t1,float[] t2,ref ArvnShader shader, ref ArvnImage target,ref ArvnZBuffer zbuf)
+        protected void TriangleFragProcess3D(float[] t0,float[] t1,float[] t2,ref IArvnShaderCaller shader, ref ArvnImage target,ref ArvnZBuffer zbuf)
         {
             TriangleFragProcess3D(ArvnVec3f.Create(t0[0], t0[1], t0[2]), ArvnVec3f.Create(t1[0], t1[1], t1[2]), ArvnVec3f.Create(t2[0], t2[1], t2[2]),ref shader, ref target, ref zbuf);
         }
-        protected void TriangleFragProcess3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2,ref ArvnShader shader, ref ArvnImage target, ref ArvnZBuffer zbuf)
+        protected void TriangleFragProcess3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2,ref IArvnShaderCaller shader, ref ArvnImage target, ref ArvnZBuffer zbuf)
         {
             ArvnVec2f bboxMax = ArvnVec2f.Create(0, 0);
             ArvnVec2f bboxMin = ArvnVec2f.Create(target.GetWidth(), target.GetHeight());

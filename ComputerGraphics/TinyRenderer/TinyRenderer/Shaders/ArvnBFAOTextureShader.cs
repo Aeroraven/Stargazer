@@ -5,7 +5,7 @@ using TinyRenderer;
 
 namespace TinyRenderer.Shaders
 {
-    class ArvnBFAOTextureShader : ArvnShader
+    class ArvnBFAOTextureShader : ArvnCompatibleShader
     {
         private float[,] viewport;
         private float[,] depthRemap;

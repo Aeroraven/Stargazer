@@ -362,7 +362,7 @@ namespace TinyRenderer
             
 
             //Shader
-            ArvnShader shader = new ArvnTinyShader();
+            ArvnCompatibleShader shader = new ArvnTinyShader();
             float[] light = { 0, 0, 1 };
             float[,] projection = ArvnCore.IdentityMatrix(4);
             float[,] modelview = ArvnCore.IdentityMatrix(4);
@@ -398,7 +398,7 @@ namespace TinyRenderer
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
 
             //Shader
-            ArvnShader shader = new ArvnTinyShader();
+            ArvnCompatibleShader shader = new ArvnTinyShader();
             float[] light = ArvnCore.Normalize(new float[]{ 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             //float[,] projection = ArvnCore.IdentityMatrix(4);
@@ -435,7 +435,7 @@ namespace TinyRenderer
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
 
             //Shader
-            ArvnShader shader = new ArvnTinyShader();
+            ArvnCompatibleShader shader = new ArvnTinyShader();
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             //float[,] projection = ArvnCore.IdentityMatrix(4);
@@ -479,7 +479,7 @@ namespace TinyRenderer
             specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
 
             //Shader
-            ArvnShader shader = new ArvnTinyShaderV2();
+            ArvnCompatibleShader shader = new ArvnTinyShaderV2();
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             //float[,] projection = ArvnCore.IdentityMatrix(4);
@@ -524,7 +524,7 @@ namespace TinyRenderer
             normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
 
             //Shader
-            ArvnShader shader = new ArvnTinyShaderV3();
+            ArvnCompatibleShader shader = new ArvnTinyShaderV3();
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             //float[,] projection = ArvnCore.IdentityMatrix(4);
@@ -564,7 +564,7 @@ namespace TinyRenderer
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
 
             //Shader
-            ArvnShader shader = new ArvnDepthShader();
+            ArvnCompatibleShader shader = new ArvnDepthShader();
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             //float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             float[,] projection = ArvnCore.ZOrthoProjectionMatrix(0.01f,3);
@@ -601,8 +601,8 @@ namespace TinyRenderer
             specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
             ArvnImage normalTexture = new ArvnImageBitmap(50, 50);
             normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
-            ArvnShader depthShader = new ArvnDepthShader();
-            ArvnShader shadowShader = new ArvnShadowShader();
+            ArvnCompatibleShader depthShader = new ArvnDepthShader();
+            ArvnCompatibleShader shadowShader = new ArvnShadowShader();
 
             //Parameters
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
@@ -675,8 +675,8 @@ namespace TinyRenderer
             ArvnZBuffer zbufb = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            ArvnShader depthShader = new ArvnDepthShader();
-            ArvnShader aoShader = new ArvnBFAOTextureShader();
+            ArvnCompatibleShader depthShader = new ArvnDepthShader();
+            ArvnCompatibleShader aoShader = new ArvnBFAOTextureShader();
             ArvnRender renderer = ArvnRender.Create();
 
             for(int i = 0; i < 30; i++)
@@ -739,10 +739,44 @@ namespace TinyRenderer
         public static void Lesson8S1P2()
         {
             //Lesson 8 Section 1 Part 2: AO Texture & Shader refactoring
+
+            //Environment
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1c.bmp");
+
+            //Shader
+            ArvnShader shader = new ArvnPlainTexturedShader();
+            float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 0, 0, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+            shader.SetVariable("projection", projection);
+            shader.SetVariable("modelview", modelview);
+            shader.SetVariable("viewport", viewport);
+            shader.SetVariable("diffuse_texture", texture);
+
+            //Attribute
+            object[] vertex = model.ExportVertices();
+            object[] vertexTexture = model.ExportVertexTexture();
+            int[] faceIndices = model.ExportFaceIndexes();
+            shader.SetAttributeVariable("vertices", vertex);
+            shader.SetAttributeVariable("vtexture", vertexTexture);
+
+            //Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref shader, ref bitmap, ref zbuf);
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p2.bmp");
+        }
+        public static void Lesson8S2()
+        {
+            //Lesson 8 Section 2: Screen Space Ambient Occlusion （SSAO)
         }
         static void Main(string[] args)
         {
-            Lesson8S1P1();
+            Lesson8S1P2();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TinyRenderer.Shaders
 {
-    class ArvnShadowShader : ArvnShader
+    class ArvnShadowShader : ArvnCompatibleShader
     {
         private float[,] pm;
         private float[,] pmi;
