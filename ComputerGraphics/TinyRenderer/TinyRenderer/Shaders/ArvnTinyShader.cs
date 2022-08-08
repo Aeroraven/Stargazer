@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TinyRenderer
+namespace TinyRenderer.Shaders
 {
     class ArvnTinyShader : ArvnShader
     {

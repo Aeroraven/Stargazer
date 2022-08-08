@@ -4,14 +4,14 @@ using System.Text;
 
 namespace TinyRenderer.Shaders
 {
-    //Shader Using Phong Shading & Normal Mapping
-    class ArvnTinyShaderV3 : ArvnShader
+    class ArvnShadowShader : ArvnShader
     {
         private float[,] pm;
         private float[,] pmi;
         private float[,] modelview;
         private float[,] projection;
         private float[,] viewport;
+        private float[,] depthRemap;
         private float[] lightdir;
         private float[] lightdir_t;
 
@@ -21,23 +21,25 @@ namespace TinyRenderer.Shaders
         private ArvnImage diffuseTexture;
         private ArvnImage specTexture;
         private ArvnImage normalTexture;
-        public ArvnTinyShaderV3() : base()
+        private ArvnImage depthMap;
+        public ArvnShadowShader() : base()
         {
             //Uniforms
             DefineVariable("modelview", "mat4f", new float[4, 4]);
             DefineVariable("projection", "mat4f", new float[4, 4]);
             DefineVariable("viewport", "mat4f", new float[4, 4]);
+            DefineVariable("depth_remap", "mat4f", new float[4, 4]);
+
             DefineVariable("lightdir", "vec3f", new float[3]);
             DefineVariable("diffuse_texture", "sampler2d", new ArvnImageBitmap(1, 1));
             DefineVariable("spec_texture", "sampler2d", new ArvnImageBitmap(1, 1));
             DefineVariable("normal_texture", "sampler2d", new ArvnImageBitmap(1, 1));
-
-            DefineVariable("version", "int", 1);
+            DefineVariable("depth_map", "sampler2d", new ArvnImageBitmap(1, 1));
 
             DefineVariable("projection_model", "mat4f", new float[4, 4]);
             DefineVariable("projection_model_inverse", "mat4f", new float[4, 4]);
 
-            //Varying
+            //Varyings
             DefineVaryingVariable("ndc_v", "vec3f");
             DefineVaryingVariable("diffuse_uv", "vec2f");
             DefineVaryingVariable("diffuse_uv_normal", "vec3f");
@@ -55,6 +57,7 @@ namespace TinyRenderer.Shaders
                 viewport = (float[,])GetVariable("viewport");
                 modelview = (float[,])GetVariable("modelview");
                 projection = (float[,])GetVariable("projection");
+                depthRemap = (float[,])GetVariable("depth_remap");
                 lightdir = (float[])GetVariable("lightdir");
                 transformed = ArvnCore.MatrixMultiply(viewport, projection, modelview);
                 transformed_ndc = ArvnCore.MatrixMultiply(projection, modelview);
@@ -71,6 +74,7 @@ namespace TinyRenderer.Shaders
                 diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
                 specTexture = (ArvnImage)GetVariable("spec_texture");
                 normalTexture = (ArvnImage)GetVariable("normal_texture");
+                depthMap = (ArvnImage)GetVariable("depth_map");
 
                 SetUniformChangedState();
             }
@@ -80,7 +84,7 @@ namespace TinyRenderer.Shaders
         {
             ComputeDerivedUniforms();
 
-            float temp;            
+            float temp;
 
             //Texture Interpolation
             float uvx = 0, uvy = 0;

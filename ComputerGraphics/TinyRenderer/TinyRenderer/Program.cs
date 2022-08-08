@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Drawing;
 
+using TinyRenderer.Shaders;
+
 namespace TinyRenderer
 {
     class Program
@@ -587,11 +589,75 @@ namespace TinyRenderer
         {
             //Lesson 7 Section 2: Shadow Mapping
 
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnImage shadowMap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zDepthBuf = ArvnZBuffer.Create(800, 800);
+            ArvnZBuffer zBuf = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnImage texture = new ArvnImageBitmap(50, 50);
+            texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
+            ArvnImage specularTexture = new ArvnImageBitmap(50, 50);
+            specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
+            ArvnImage normalTexture = new ArvnImageBitmap(50, 50);
+            normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
+
+            //Parameters
+            ArvnShader depthShader = new ArvnDepthShader();
+            ArvnShader shadowShader = new ArvnShadowShader();
+            float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
+            float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
+            float[,] depthProjection = ArvnCore.ZOrthoProjectionMatrix(0.01f, 3);
+            float[,] modelview = ArvnCore.LookAt(new float[] { 0, 0, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] depthModelview = ArvnCore.LookAt(new float[] { 1, 1, 1 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+            float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
+
+            depthShader.SetVariable("projection", depthProjection);
+            depthShader.SetVariable("modelview", depthModelview);
+            depthShader.SetVariable("viewport", viewport);
+
+            //Attribute
+            object[] vertex = model.ExportVertices();
+            object[] vertexNormal = model.ExportVertexNormals();
+            object[] vertexTexture = model.ExportVertexTexture();
+            int[] faceIndices = model.ExportFaceIndexes();
+            depthShader.SetAttributeVariable("vertices", vertex);
+
+            //First-pass Render
+            ArvnRender renderer = ArvnRender.Create();
+            renderer.RasterizeTriangles3D(faceIndices, ref depthShader, ref shadowMap, ref zDepthBuf);
+
+            //Second-pass Preparation
+            float[,] firstPassTransform = ArvnCore.MatrixMultiply(viewport, depthProjection, depthModelview);
+            float[,] secondPassTransformNdc = ArvnCore.MatrixMultiply(projection, modelview);
+            float[,] secondPassTransformNdcI = ArvnCore.InverseMatrix(secondPassTransformNdc);
+            float[,] depthRemap = ArvnCore.MatrixMultiply(firstPassTransform, secondPassTransformNdcI);
+            shadowShader.SetVariable("projection", projection);
+            shadowShader.SetVariable("modelview", modelview);
+            shadowShader.SetVariable("viewport", viewport);
+            shadowShader.SetVariable("lightdir", light);
+            shadowShader.SetVariable("diffuse_texture", texture);
+            shadowShader.SetVariable("spec_texture", specularTexture);
+            shadowShader.SetVariable("normal_texture", normalTexture);
+            shadowShader.SetVariable("depth_map", shadowMap);
+            shadowShader.SetVariable("depth_remap", depthRemap);
+
+
+            shadowShader.SetAttributeVariable("vertices", vertex);
+            shadowShader.SetAttributeVariable("vnormals", vertexNormal);
+            shadowShader.SetAttributeVariable("vtexture", vertexTexture);
+
+            //Second-pass Render
+            renderer.RasterizeTriangles3D(faceIndices, ref shadowShader, ref bitmap, ref zBuf);
+
+            //Save
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l7s2.bmp");
+
         }
-        
+
         static void Main(string[] args)
         {
-            Lesson7S1();
+            Lesson7S2();
         }
     }
 }
