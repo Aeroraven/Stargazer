@@ -52,7 +52,7 @@ namespace TinyRenderer.Shaders
             float depth = (ip[2] + 1) / 2f;
             if (depth < 0 || depth > 1)
             {
-                throw new Exception("Invalid range");
+                depth = 0;
             }
             float[] color = Vec4f(depth, depth, depth, 1);
 

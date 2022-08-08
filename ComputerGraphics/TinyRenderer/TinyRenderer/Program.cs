@@ -601,10 +601,10 @@ namespace TinyRenderer
             specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
             ArvnImage normalTexture = new ArvnImageBitmap(50, 50);
             normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
-
-            //Parameters
             ArvnShader depthShader = new ArvnDepthShader();
             ArvnShader shadowShader = new ArvnShadowShader();
+
+            //Parameters
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             float[,] depthProjection = ArvnCore.ZOrthoProjectionMatrix(0.01f, 3);
@@ -654,10 +654,95 @@ namespace TinyRenderer
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l7s2b.bmp");
 
         }
+        public static void Lesson8S1P1Pre()
+        {
+            //Lesson 8 Section 1 Part 1 Pre: Random unit vector
+            
+            for (int i = 0; i < 30; i++)
+            {
+                float[] eye = ArvnCore.RandomUnitVector();
+                Console.WriteLine(eye[0] + "," + eye[1] + "," + eye[2]);
+            }
+        }
+        public static void Lesson8S1P1()
+        {
+            //Lesson 8 Section 1 Part 1: Ambient occlusion in BF Algorithm / Visibility information calculation & Exporting AO texture
 
+            //Environment
+            ArvnImage depthMap = new ArvnImageBitmap(800, 800);
+            ArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
+            ArvnZBuffer zbufb = ArvnZBuffer.Create(800, 800);
+            ArvnMesh model = new ArvnMesh();
+            model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
+            ArvnShader depthShader = new ArvnDepthShader();
+            ArvnShader aoShader = new ArvnBFAOTextureShader();
+            ArvnRender renderer = ArvnRender.Create();
+
+            for(int i = 0; i < 30; i++)
+            {
+                Console.WriteLine("Iteration" + i);
+                zbuf.Reset();
+                zbufb.Reset();
+                Console.WriteLine("Depth Rendering" + i);
+                //Attribute
+                object[] vertex = model.ExportVertices();
+                int[] faceIndices = model.ExportFaceIndexes();
+                object[] vertexTexture = model.ExportVertexTexture();
+
+                //First Pass Shader
+                float[] eye = ArvnCore.RandomUnitVector();
+                float[] up = new float[] { ArvnCore.RandomUniform(), ArvnCore.RandomUniform(), ArvnCore.RandomUniform() };
+                eye[1] = Math.Abs(eye[1]);
+                float[,] projection = ArvnCore.ZOrthoProjectionMatrix(0.001f, 3);
+                float[,] modelview = ArvnCore.LookAt(eye, new float[] { 0, 0, 0 }, up);
+                float[,] viewport = ArvnCore.RectViewportMatrix3D(799, 799, 1, 1);
+                float[,] viewportuv = ArvnCore.RectViewportMatrix3DEx(799, 799, 1, 1);
+                depthShader.SetVariable("projection", projection);
+                depthShader.SetVariable("modelview", modelview);
+                depthShader.SetVariable("viewport", viewport);
+                depthShader.SetAttributeVariable("vertices", vertex);
+
+                //First Pass Render
+                renderer.standardZCoordLimit = false;
+                renderer.RasterizeTriangles3D(faceIndices, ref depthShader, ref depthMap, ref zbuf);
+                if (i == 0)
+                {
+                    depthMap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1a.bmp");
+                }
+
+
+                //Second Pass Shader
+                Console.WriteLine("AO Rendering" + i);
+                float[,] firstPassTransform = ArvnCore.MatrixMultiply(viewport, projection, modelview);
+                aoShader.SetVariable("viewport", viewportuv);
+                aoShader.SetVariable("depth_map", depthMap);
+                aoShader.SetVariable("ao_map", bitmap);
+                aoShader.SetVariable("depth_remap", firstPassTransform);
+                aoShader.SetVariable("iteration", i);
+
+                aoShader.SetAttributeVariable("vertices", vertex);
+                aoShader.SetAttributeVariable("vtexture", vertexTexture);
+
+                //Second Pass Render
+                renderer.standardZCoordLimit = true;
+                renderer.RasterizeTriangles3D(faceIndices, ref aoShader, ref bitmap, ref zbufb);
+                if (i == 0)
+                {
+                    bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1b.bmp");
+                }
+                
+            }
+            bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1c.bmp");
+        }
+
+        public static void Lesson8S1P2()
+        {
+            //Lesson 8 Section 1 Part 2: AO Texture & Shader refactoring
+        }
         static void Main(string[] args)
         {
-            Lesson7S2();
+            Lesson8S1P1();
         }
     }
 }

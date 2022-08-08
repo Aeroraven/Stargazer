@@ -32,5 +32,12 @@ namespace TinyRenderer
         {
             return buf[y * width + x];
         }
+        public void Reset()
+        {
+            for (int i = 0; i < width * height; i++)
+            {
+                buf[i] = -1e30f;
+            }
+        }
     }
 }

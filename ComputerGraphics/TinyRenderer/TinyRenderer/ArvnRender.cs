@@ -6,6 +6,7 @@ namespace TinyRenderer
 {
     class ArvnRender
     {
+        public bool standardZCoordLimit = false;
         static public ArvnRender Create()
         {
             return new ArvnRender();
@@ -98,6 +99,10 @@ namespace TinyRenderer
                     if (ta >= 0 && tb >= 0 & tc >= 0)
                     {
                         float zv = (float)(ta * t0.z + tb * t1.z + tc * t2.z);
+                        if(standardZCoordLimit && (zv < -1 || zv > 1))
+                        {
+                            continue;
+                        }
                         shader.FragmentShader(new float[] { ta, tb, tc });
                         float[] color = (float[])shader.GetVariable("arFragColor");
                         int hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));

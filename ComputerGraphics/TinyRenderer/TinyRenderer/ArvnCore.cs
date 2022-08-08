@@ -297,6 +297,23 @@ namespace TinyRenderer
             m[1, 3] = h / 2;
             return m;
         }
+        static public float[,] RectViewportMatrix3DEx(float w, float h, float vw, float vh)
+        {
+            float[,] m = new float[4, 4];
+            for (int i = 0; i < 16; i++)
+            {
+                m[i / 4, i % 4] = 0;
+            }
+            float wscale = w / vw;
+            float hscale = h / vh;
+            m[0, 0] = wscale;
+            m[1, 1] = hscale;
+            m[2, 2] = 1;
+            m[3, 3] = 1;
+            m[0, 3] = 0;
+            m[1, 3] = 0;
+            return m;
+        }
         static public float[,] IdentityMatrix(int order)
         {
             float[,] m = new float[order, order];
@@ -336,6 +353,12 @@ namespace TinyRenderer
         {
             Random rd = new Random();
             return RGBToHex(rd.Next(0, 255), rd.Next(0, 255), rd.Next(0, 255));
+        }
+
+        static public float RandomUniform()
+        {
+            Random rd = new Random();
+            return (float)rd.NextDouble();
         }
 
         static public float[] Normalize(float[] vec)
@@ -602,6 +625,15 @@ namespace TinyRenderer
             ret[2, 2] = -2 / (zNear - zFar);
             ret[2, 3] = -(zNear + zFar) / (zNear - zFar);
             return ret;
+        }
+        static public float[] RandomUnitVector()
+        {
+            float alpha = RandomUniform() * 2 * 3.14159f;
+            float beta = RandomUniform() * 2 * 3.14159f;
+            float y = (float)Math.Sin(beta);
+            float x = (float)(Math.Cos(beta) * Math.Cos(alpha));
+            float z = (float)(Math.Cos(beta) * Math.Sin(alpha));
+            return new float[] { x, y, z };
         }
         
     }
