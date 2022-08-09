@@ -2,29 +2,27 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
-using TinyRenderer.Display;
 using TinyRenderer.Render;
 
 namespace TinyRenderer.Shaders
 {
-    class ArvnPlainTexturedShader : ArvnShader
+    class ArvnSSAODepthShader : ArvnShader
     {
-        private float[,] modelview;
-        private float[,] projection;
-        private float[,] viewport;
-        private float[,] pm;
-        private IArvnImage diffuseTexture;
-        public ArvnPlainTexturedShader() : base()
+        float[,] modelview;
+        float[,] projection;
+        float[,] viewport;
+        float[,] p_ndc;
+        float[,] p_screen;
+        public ArvnSSAODepthShader() : base()
         {
             //Uniforms
             DefineVariable("modelview", "mat4f", new float[4, 4]);
             DefineVariable("projection", "mat4f", new float[4, 4]);
             DefineVariable("viewport", "mat4f", new float[4, 4]);
-            DefineVariable("diffuse_texture", "sampler2d", new ArvnImageBitmap(1, 1));
 
-            //Varyings
+            //Varying
+            DefineVaryingVariable("v_ndc", "vec3f");
             DefineVaryingVariable("v_uv", "vec2f");
-
 
             //Attributes
             DefineAttributeVariable("vertices", "vec3f");
@@ -34,33 +32,36 @@ namespace TinyRenderer.Shaders
         {
             if (FindIsUniformChanged())
             {
-                viewport = (float[,])GetVariable("viewport");
                 modelview = (float[,])GetVariable("modelview");
                 projection = (float[,])GetVariable("projection");
-                pm = ArvnCore.MatrixMultiply(viewport, projection, modelview);
-                diffuseTexture = (IArvnImage)GetVariable("diffuse_texture");
+                viewport = (float[,])GetVariable("viewport");
+                p_ndc = ArvnCore.MatrixMultiply(projection, modelview);
+                p_screen = ArvnCore.MatrixMultiply(viewport, p_ndc);
+
                 SetUniformChangedState();
             }
         }
 
         public override void FragmentShader()
         {
-            ComputeDerivedVariables();
+            float[] vNdc = (float[])GetVaryingVariable("v_ndc");
             float[] vUv = (float[])GetVaryingVariable("v_uv");
-            float[] c = diffuseTexture.GetInNormalizedEx(vUv[0], vUv[1]);
-            SetVariable(arFragColor, new float[] { c[0], c[1], c[2], 1 });
+            float depth = (vNdc[2] + 1f)/2;
+            float[] cl = Vec4f(depth, vUv[0], vUv[1], depth);
+            SetVariable(arFragColor, cl);
         }
 
         public override void VertexShader()
         {
-            ComputeDerivedVariables();
             float[] v = (float[])GetAttributeVariable("vertices");
-            float[] vx = new float[4];
-            ArvnCore.HomogeneousLinearTransform3DToCartesian(pm, v[0], v[1], v[2], 1, out vx[0], out vx[1], out vx[2]);
             float[] vt = (float[])GetAttributeVariable("vtexture");
-            SetVaryingVariable("v_uv", new float[] { vt[0], vt[1] });
-            SetVariable(arPosition, vx);
-
+            float[] vNdc = new float[3];
+            float[] vScr = new float[4];
+            ArvnCore.HomogeneousLinearTransform3DToCartesian(p_ndc, v[0], v[1], v[2], 1, out vNdc[0], out vNdc[1], out vNdc[2]);
+            ArvnCore.HomogeneousLinearTransform3DToCartesian(p_screen, v[0], v[1], v[2], 1, out vScr[0], out vScr[1], out vScr[2]);
+            SetVariable(arPosition, vScr);
+            SetVaryingVariable("v_ndc", vNdc);
+            SetVaryingVariable("v_uv", Vec2f(vt[0], vt[1]));
         }
     }
 }

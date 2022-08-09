@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Core;
+using TinyRenderer.Display;
 
 namespace TinyRenderer.Shaders
 {
-    class ArvnShadowShader : ArvnCompatibleShader
+    class ArvnCompatibleShadowShader : ArvnCompatibleShader
     {
         private float[,] pm;
         private float[,] pmi;
@@ -18,11 +20,11 @@ namespace TinyRenderer.Shaders
         private float[,] transformed;
         private float[,] transformed_ndc;
 
-        private ArvnImage diffuseTexture;
-        private ArvnImage specTexture;
-        private ArvnImage normalTexture;
-        private ArvnImage depthMap;
-        public ArvnShadowShader() : base()
+        private IArvnImage diffuseTexture;
+        private IArvnImage specTexture;
+        private IArvnImage normalTexture;
+        private IArvnImage depthMap;
+        public ArvnCompatibleShadowShader() : base()
         {
             //Uniforms
             DefineVariable("modelview", "mat4f", new float[4, 4]);
@@ -71,10 +73,10 @@ namespace TinyRenderer.Shaders
                 ArvnCore.HomogeneousLinearTransform3D(pm, lightdir[0], lightdir[1], lightdir[2], 0, out lightdir_t[0], out lightdir_t[1], out lightdir_t[2], out temp);
                 lightdir_t = ArvnCore.Normalize(lightdir_t);
 
-                diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
-                specTexture = (ArvnImage)GetVariable("spec_texture");
-                normalTexture = (ArvnImage)GetVariable("normal_texture");
-                depthMap = (ArvnImage)GetVariable("depth_map");
+                diffuseTexture = (IArvnImage)GetVariable("diffuse_texture");
+                specTexture = (IArvnImage)GetVariable("spec_texture");
+                normalTexture = (IArvnImage)GetVariable("normal_texture");
+                depthMap = (IArvnImage)GetVariable("depth_map");
 
                 SetUniformChangedState();
             }

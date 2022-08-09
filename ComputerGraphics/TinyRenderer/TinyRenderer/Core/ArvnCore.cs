@@ -4,12 +4,17 @@ using System.Text;
 
 namespace TinyRenderer
 {
-    class ArvnCoreException : System.ApplicationException
+    class ArvnCoreException : ApplicationException
     {
         public ArvnCoreException(string message) : base(message) { }
     }
+}
+
+namespace TinyRenderer.Core
+{
     class ArvnCore
     {
+        static Random randomEngine = new Random();
         static public void Swap<T>(ref T a, ref T b)
         {
             T x = a;
@@ -329,9 +334,9 @@ namespace TinyRenderer
         }
         static public void HexToRGB(int hex, out int r, out int g, out int b)
         {
-            r = (int)((((0xff << 16) & hex) >> 16));
-            g = (int)((((0xff << 8) & hex) >> 8));
-            b = (int)((((0xff << 0) & hex) >> 0));
+            r = (0xff << 16 & hex) >> 16;
+            g = (0xff << 8 & hex) >> 8;
+            b = (0xff << 0 & hex) >> 0;
         }
         static public int RGBToHex(int r, int g, int b)
         {
@@ -339,13 +344,13 @@ namespace TinyRenderer
             {
                 throw new ArvnCoreException("Invalid range");
             }
-            return (0xff << 24) | (r << 16) | (g << 8) | b;
+            return 0xff << 24 | r << 16 | g << 8 | b;
         }
         static public int RGBScale(int hex, float modf)
         {
-            int r = (int)((((0xff << 16) & hex) >> 16) * modf);
-            int g = (int)((((0xff << 8) & hex) >> 8) * modf);
-            int b = (int)((((0xff << 0) & hex) >> 0) * modf);
+            int r = (int)(((0xff << 16 & hex) >> 16) * modf);
+            int g = (int)(((0xff << 8 & hex) >> 8) * modf);
+            int b = (int)(((0xff << 0 & hex) >> 0) * modf);
             return RGBToHex(r, g, b);
 
         }
@@ -354,13 +359,10 @@ namespace TinyRenderer
             Random rd = new Random();
             return RGBToHex(rd.Next(0, 255), rd.Next(0, 255), rd.Next(0, 255));
         }
-
         static public float RandomUniform()
         {
-            Random rd = new Random();
-            return (float)rd.NextDouble();
+            return (float)randomEngine.NextDouble();
         }
-
         static public float[] Normalize(float[] vec)
         {
             float[] nvec = new float[vec.Length];
@@ -445,7 +447,7 @@ namespace TinyRenderer
             float a = (zNear + zFar) / (zFar - zNear);
             float b = 2 * zNear * zFar / (zFar - zNear);
             float tx = 1 / (aspect * tanfov);
-            float ty = 1 / (tanfov);
+            float ty = 1 / tanfov;
             float[,] pp = IdentityMatrix(4);
             pp[0, 0] = tx;
             pp[1, 1] = ty;
@@ -510,7 +512,7 @@ namespace TinyRenderer
             {
                 for (int j = 0; j < o - 1; j++)
                 {
-                    y[i, j] = x[i + ((i >= c) ? 1 : 0), j + ((j >= r) ? 1 : 0)];
+                    y[i, j] = x[i + (i >= c ? 1 : 0), j + (j >= r ? 1 : 0)];
                 }
             }
             float det = Determinant(y);
@@ -619,7 +621,7 @@ namespace TinyRenderer
             }
             return intmat;
         }
-        static public float[,] ZOrthoProjectionMatrix(float zNear,float zFar)
+        static public float[,] ZOrthoProjectionMatrix(float zNear, float zFar)
         {
             float[,] ret = IdentityMatrix(4);
             ret[2, 2] = -2 / (zNear - zFar);
@@ -635,6 +637,6 @@ namespace TinyRenderer
             float z = (float)(Math.Cos(beta) * Math.Sin(alpha));
             return new float[] { x, y, z };
         }
-        
+
     }
 }

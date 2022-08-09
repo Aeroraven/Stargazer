@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Core;
+using TinyRenderer.Display;
+using TinyRenderer.Shaders;
 
-namespace TinyRenderer
+namespace TinyRenderer.Render
 {
     class ArvnRender
     {
@@ -11,7 +14,7 @@ namespace TinyRenderer
         {
             return new ArvnRender();
         }
-        public void DrawLine(int x0, int y0, int x1, int y1, int colorHex, ref ArvnImage target)
+        public void DrawLine(int x0, int y0, int x1, int y1, int colorHex, ref IArvnImage target)
         {
             bool steep = false;
             if (Math.Abs(y1 - y0) > Math.Abs(x1 - x0))
@@ -30,7 +33,7 @@ namespace TinyRenderer
             int dy2a = Math.Abs(dy) * 2;
             int error = 0;
             int y = y0;
-            int yi = (y1 > y0) ? 1 : -1;
+            int yi = y1 > y0 ? 1 : -1;
             for (int i = x0; i <= x1; i++)
             {
                 if (!steep)
@@ -49,21 +52,22 @@ namespace TinyRenderer
                 }
             }
         }
-        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnCompatibleShader shader, ref ArvnImage target, ref ArvnZBuffer zbuf) { 
-            IArvnShaderCaller caller = shader;
-            RasterizeTriangles3D(faceIndex, ref caller, ref target, ref zbuf);
-        }
-        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnShader shader, ref ArvnImage target, ref ArvnZBuffer zbuf)
+        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnCompatibleShader shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
             IArvnShaderCaller caller = shader;
             RasterizeTriangles3D(faceIndex, ref caller, ref target, ref zbuf);
         }
-        public void RasterizeTriangles3D(int[] faceIndex, ref IArvnShaderCaller shader,ref ArvnImage target, ref ArvnZBuffer zbuf)
+        public void RasterizeTriangles3D(int[] faceIndex, ref ArvnShader shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
-            for(int i = 0; i < faceIndex.Length; i+=3)
+            IArvnShaderCaller caller = shader;
+            RasterizeTriangles3D(faceIndex, ref caller, ref target, ref zbuf);
+        }
+        public void RasterizeTriangles3D(int[] faceIndex, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
+        {
+            for (int i = 0; i < faceIndex.Length; i += 3)
             {
                 float[][] v = new float[3][];
-                for(int j = 0; j < 3; j++)
+                for (int j = 0; j < 3; j++)
                 {
                     shader.VertexShader(faceIndex[i + j], j);
                     v[j] = (float[])shader.GetVariable("arPosition");
@@ -71,11 +75,11 @@ namespace TinyRenderer
                 TriangleFragProcess3D(v[0], v[1], v[2], ref shader, ref target, ref zbuf);
             }
         }
-        protected void TriangleFragProcess3D(float[] t0,float[] t1,float[] t2,ref IArvnShaderCaller shader, ref ArvnImage target,ref ArvnZBuffer zbuf)
+        protected void TriangleFragProcess3D(float[] t0, float[] t1, float[] t2, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
-            TriangleFragProcess3D(ArvnVec3f.Create(t0[0], t0[1], t0[2]), ArvnVec3f.Create(t1[0], t1[1], t1[2]), ArvnVec3f.Create(t2[0], t2[1], t2[2]),ref shader, ref target, ref zbuf);
+            TriangleFragProcess3D(ArvnVec3f.Create(t0[0], t0[1], t0[2]), ArvnVec3f.Create(t1[0], t1[1], t1[2]), ArvnVec3f.Create(t2[0], t2[1], t2[2]), ref shader, ref target, ref zbuf);
         }
-        protected void TriangleFragProcess3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2,ref IArvnShaderCaller shader, ref ArvnImage target, ref ArvnZBuffer zbuf)
+        protected void TriangleFragProcess3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
             ArvnVec2f bboxMax = ArvnVec2f.Create(0, 0);
             ArvnVec2f bboxMin = ArvnVec2f.Create(target.GetWidth(), target.GetHeight());
@@ -108,7 +112,7 @@ namespace TinyRenderer
                     if (ta >= 0 && tb >= 0 & tc >= 0)
                     {
                         float zv = (float)(ta * t0.z + tb * t1.z + tc * t2.z);
-                        if(standardZCoordLimit && (zv < -1 || zv > 1))
+                        if (standardZCoordLimit && (zv < -1 || zv > 1))
                         {
                             continue;
                         }

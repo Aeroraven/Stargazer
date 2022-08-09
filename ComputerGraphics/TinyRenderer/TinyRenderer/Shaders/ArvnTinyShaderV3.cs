@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Core;
+using TinyRenderer.Display;
 
 namespace TinyRenderer.Shaders
 {
@@ -18,9 +20,9 @@ namespace TinyRenderer.Shaders
         private float[,] transformed;
         private float[,] transformed_ndc;
 
-        private ArvnImage diffuseTexture;
-        private ArvnImage specTexture;
-        private ArvnImage normalTexture;
+        private IArvnImage diffuseTexture;
+        private IArvnImage specTexture;
+        private IArvnImage normalTexture;
         public ArvnTinyShaderV3() : base()
         {
             //Uniforms
@@ -68,9 +70,9 @@ namespace TinyRenderer.Shaders
                 ArvnCore.HomogeneousLinearTransform3D(pm, lightdir[0], lightdir[1], lightdir[2], 0, out lightdir_t[0], out lightdir_t[1], out lightdir_t[2], out temp);
                 lightdir_t = ArvnCore.Normalize(lightdir_t);
 
-                diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
-                specTexture = (ArvnImage)GetVariable("spec_texture");
-                normalTexture = (ArvnImage)GetVariable("normal_texture");
+                diffuseTexture = (IArvnImage)GetVariable("diffuse_texture");
+                specTexture = (IArvnImage)GetVariable("spec_texture");
+                normalTexture = (IArvnImage)GetVariable("normal_texture");
 
                 SetUniformChangedState();
             }

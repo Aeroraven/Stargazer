@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TinyRenderer;
+using TinyRenderer.Core;
+using TinyRenderer.Display;
 
 namespace TinyRenderer.Shaders
 {
-    class ArvnBFAOTextureShader : ArvnCompatibleShader
+    class ArvnCompatibleBFAOTextureShader : ArvnCompatibleShader
     {
         private float[,] viewport;
         private float[,] depthRemap;
         private int iteration;
-        private ArvnImage depthMap;
-        private ArvnImage aoMap;
-        public ArvnBFAOTextureShader() : base()
+        private IArvnImage depthMap;
+        private IArvnImage aoMap;
+        public ArvnCompatibleBFAOTextureShader() : base()
         {
             //Uniforms
             DefineVariable("viewport", "mat4f", new float[4, 4]);
@@ -35,8 +36,8 @@ namespace TinyRenderer.Shaders
             {
                 viewport = (float[,])GetVariable("viewport");
                 depthRemap = (float[,])GetVariable("depth_remap");
-                depthMap = (ArvnImage)GetVariable("depth_map");
-                aoMap = (ArvnImage)GetVariable("ao_map");
+                depthMap = (IArvnImage)GetVariable("depth_map");
+                aoMap = (IArvnImage)GetVariable("ao_map");
                 iteration = (int)GetVariable("iteration");
                 SetUniformChangedState();
             }

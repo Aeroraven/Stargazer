@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Core;
+using TinyRenderer.Display;
 
 namespace TinyRenderer.Shaders
 {
@@ -43,7 +45,7 @@ namespace TinyRenderer.Shaders
             float[] color = Vec4f(intensity, intensity, intensity, 1);
             if (version >= 2)
             {
-                ArvnImage diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
+                IArvnImage diffuseTexture = (IArvnImage)GetVariable("diffuse_texture");
 
                 float uvx = 0, uvy = 0;
                 

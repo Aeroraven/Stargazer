@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TinyRenderer
+namespace TinyRenderer.Display
 {
-    abstract class ArvnImage
+    interface IArvnImage
     {
-        protected int height;
-        protected int width;
+
         abstract public void Set(int x, int y, int hexColor);
         abstract public int Get(int x, int y);
 
         abstract public int GetInNormalized(float x, float y);
 
-        abstract public void GetInNormalized(float x, float y,out float r,out float g, out float b);
+        abstract public void GetInNormalized(float x, float y, out float r, out float g, out float b);
 
         abstract public float[] GetInNormalizedEx(float x, float y);
         abstract public void SetHeight(int x);

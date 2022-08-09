@@ -8,6 +8,7 @@
   <ItemGroup>
     <None Remove="ArvnCore.cs~RF23938f56.TMP" />
     <None Remove="ArvnTinyShaderV3.cs~RF47c1c23.TMP" />
+    <None Remove="Shaders\ArvnSSAOBufferShader.cs~RF7360859.TMP" />
   </ItemGroup>
 
   <ItemGroup>

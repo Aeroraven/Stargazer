@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Display;
+using TinyRenderer.Shaders;
 
-namespace TinyRenderer
+namespace TinyRenderer.Render
 {
     abstract class ArvnShader : IArvnShaderCaller
     {
@@ -50,6 +52,14 @@ namespace TinyRenderer
         protected float[] Vec4f(float r, float g, float b, float a)
         {
             return new float[4] { r, g, b, a };
+        }
+        protected float[] Vec3f(float r, float g, float b)
+        {
+            return new float[3] { r, g, b};
+        }
+        protected float[] Vec2f(float x,float y)
+        {
+            return new float[2] { x, y };
         }
         protected ArvnShader()
         {
@@ -256,7 +266,7 @@ namespace TinyRenderer
             //Texture
             if (typeName == "sampler2d")
             {
-                if (value is ArvnImage)
+                if (value is IArvnImage)
                 {
                     return true;
                 }
@@ -275,6 +285,7 @@ namespace TinyRenderer
         {
             activeIndex = index;
             activeVIndex = vindex;
+            ComputeDerivedVariables();
             VertexShader();
         }
         abstract public void VertexShader();

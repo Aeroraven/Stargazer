@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Core;
 
 namespace TinyRenderer.Shaders
 {
-    class ArvnDepthShader : ArvnCompatibleShader
+    class ArvnCompatibleDepthShader : ArvnCompatibleShader
     {
         private float[,] pm;
         private float[,] pmi;
@@ -13,7 +14,7 @@ namespace TinyRenderer.Shaders
         private float[,] viewport;
         private float[,] transformed;
         private float[,] transformed_ndc;
-        public ArvnDepthShader() : base()
+        public ArvnCompatibleDepthShader() : base()
         {
             //Uniforms
             DefineVariable("modelview", "mat4f", new float[4, 4]);

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Display;
+using TinyRenderer.Shaders;
 
 namespace TinyRenderer
 {
@@ -203,7 +205,7 @@ namespace TinyRenderer
             //Texture
             if (typeName == "sampler2d")
             {
-                if(value is ArvnImage)
+                if(value is IArvnImage)
                 {
                     return true;
                 }

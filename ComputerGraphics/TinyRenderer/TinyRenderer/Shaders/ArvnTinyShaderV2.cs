@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TinyRenderer.Core;
+using TinyRenderer.Display;
 
 namespace TinyRenderer.Shaders
 {
@@ -52,8 +54,8 @@ namespace TinyRenderer.Shaders
 
             float[,] pm = (float[,])GetVariable("projection_model");
             float[,] pmi = (float[,])GetVariable("projection_model_inverse");
-            ArvnImage diffuseTexture = (ArvnImage)GetVariable("diffuse_texture");
-            ArvnImage specTexture = (ArvnImage)GetVariable("spec_texture");
+            IArvnImage diffuseTexture = (IArvnImage)GetVariable("diffuse_texture");
+            IArvnImage specTexture = (IArvnImage)GetVariable("spec_texture");
 
             float[] lightdir_t = new float[3];
             float[] relightdir_t = new float[3];

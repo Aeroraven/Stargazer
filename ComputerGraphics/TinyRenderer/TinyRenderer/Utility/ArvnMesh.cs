@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace TinyRenderer
+namespace TinyRenderer.Utility
 {
     class ArvnMesh
     {
@@ -19,8 +19,8 @@ namespace TinyRenderer
         private int vnNums = 0;
         public object[] ExportVertices()
         {
-            object[] ret = new object[faces.Count ];
-            for(int i = 0; i < faces.Count / 3 ; i++)
+            object[] ret = new object[faces.Count];
+            for (int i = 0; i < faces.Count / 3; i++)
             {
                 int a, b, c;
                 GetFace(i, out a, out b, out c);
@@ -68,7 +68,7 @@ namespace TinyRenderer
         public int[] ExportFaceIndexes()
         {
             int[] idx = new int[faces.Count];
-            for(int i=0;i< faces.Count; i++)
+            for (int i = 0; i < faces.Count; i++)
             {
                 idx[i] = i;
             }
@@ -91,7 +91,7 @@ namespace TinyRenderer
         {
             return fNums;
         }
-        public void GetFace(int idx,out int ta,out int tb,out int tc)
+        public void GetFace(int idx, out int ta, out int tb, out int tc)
         {
             ta = faces[3 * idx];
             tb = faces[3 * idx + 1];
@@ -154,7 +154,7 @@ namespace TinyRenderer
                 if (el[0] == "f")
                 {
                     fNums++;
-                    for(int i = 1; i <= 3; i++)
+                    for (int i = 1; i <= 3; i++)
                     {
                         string[] g = el[i].Split("/");
                         faces.Add(int.Parse(g[0]));
