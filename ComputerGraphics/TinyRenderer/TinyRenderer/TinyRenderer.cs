@@ -97,7 +97,7 @@ namespace TinyRenderer
             Renderer.DrawTriangleHollowV2(t2[0], t2[1], t2[2], Renderer.RGBToHex(0, 255, 0), ref bitmap);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l2s1p2.bmp");
         }
-        
+
         static void Lesson2S1P3()
         {
             //Lesson 2 Section 1 Part 3: Fill the lower area
@@ -193,7 +193,7 @@ namespace TinyRenderer
             IArvnImage bitmap = new ArvnImageBitmap(800, 1);
             int[] ybuffer;
             Renderer.GenerateYBuffer(800, out ybuffer);
-            Renderer.Rasterize2D(20, 34, 744, 400, Renderer.RGBToHex(255, 0, 0), ref bitmap, ref ybuffer); 
+            Renderer.Rasterize2D(20, 34, 744, 400, Renderer.RGBToHex(255, 0, 0), ref bitmap, ref ybuffer);
             Renderer.Rasterize2D(120, 434, 444, 400, Renderer.RGBToHex(0, 255, 0), ref bitmap, ref ybuffer);
             Renderer.Rasterize2D(330, 463, 594, 200, Renderer.RGBToHex(0, 0, 255), ref bitmap, ref ybuffer);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s1p2.bmp");
@@ -208,7 +208,7 @@ namespace TinyRenderer
             ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            Renderer.RasterizeFlatShading3D(model, light, ref bitmap,ref zbuf);
+            Renderer.RasterizeFlatShading3D(model, light, ref bitmap, ref zbuf);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s2.bmp");
         }
 
@@ -237,11 +237,11 @@ namespace TinyRenderer
 
             Renderer.DrawLineV5(0, 0, 0, 1, Renderer.RGBToHex(0, 255, 0), ref bitmap);
             Renderer.DrawLineV5(0, 0, 1, 0, Renderer.RGBToHex(255, 0, 0), ref bitmap);
-            for(int i = 0; i < p.Length; i++)
+            for (int i = 0; i < p.Length; i++)
             {
-                Renderer.DrawLineV5((int)p[i].x * 200 + 400, (int)p[i].y * 200 + 400, (int)p[(i+1)%p.Length].x * 200 + 400, (int)p[(i + 1) % p.Length].y * 200 + 400, Renderer.RGBToHex(255, 255, 255), ref bitmap);
+                Renderer.DrawLineV5((int)p[i].x * 200 + 400, (int)p[i].y * 200 + 400, (int)p[(i + 1) % p.Length].x * 200 + 400, (int)p[(i + 1) % p.Length].y * 200 + 400, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             }
-            for(int i = 0; i < p.Length; i++)
+            for (int i = 0; i < p.Length; i++)
             {
                 ArvnCore.CartesianLinearTransform2D(ArvnCore.ScaleTransformCartesian2D(0.5f), p[i].x, p[i].y, out q[i].x, out q[i].y);
             }
@@ -315,12 +315,12 @@ namespace TinyRenderer
                 ArvnCore.HomogeneousLinearTransform2DToCartesian(vp, p[i].x, p[i].y, 1, out q[i].x, out q[i].y);
             }
             for (int i = 0; i < p.Length; i++)
-            { 
+            {
                 Renderer.DrawLineV5((int)q[i].x, (int)q[i].y, (int)q[(i + 1) % p.Length].x, (int)q[(i + 1) % p.Length].y, Renderer.RGBToHex(255, 0, 0), ref bitmap);
             }
             float[,] composed = ArvnCore.MatrixMultiply(
                 vp,
-                ArvnCore.ScaleTransformHomogeneous2D(0.5f), 
+                ArvnCore.ScaleTransformHomogeneous2D(0.5f),
                 ArvnCore.RotationTransformHomogeneous2D((float)Math.PI / 4));
 
             for (int i = 0; i < p.Length; i++)
@@ -364,7 +364,7 @@ namespace TinyRenderer
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
             IArvnImage texture = new ArvnImageBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
-            
+
 
             //Shader
             ArvnCompatibleShader shader = new ArvnTinyShader();
@@ -404,7 +404,7 @@ namespace TinyRenderer
 
             //Shader
             ArvnCompatibleShader shader = new ArvnTinyShader();
-            float[] light = ArvnCore.Normalize(new float[]{ 1, 1, 1 });
+            float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
             //float[,] projection = ArvnCore.IdentityMatrix(4);
             float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 2 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
@@ -572,7 +572,7 @@ namespace TinyRenderer
             ArvnCompatibleShader shader = new ArvnCompatibleDepthShader();
             float[] light = ArvnCore.Normalize(new float[] { 1, 1, 1 });
             //float[,] projection = ArvnCore.PerspectiveMatrix(3.14159f / 3, 1, 0.01f, 100f);
-            float[,] projection = ArvnCore.ZOrthoProjectionMatrix(0.01f,3);
+            float[,] projection = ArvnCore.ZOrthoProjectionMatrix(0.01f, 3);
             float[,] modelview = ArvnCore.LookAt(new float[] { 1, 1, 1 }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
             float[,] viewport = ArvnCore.RectViewportMatrix3D(700, 700, 1, 1);
             shader.SetVariable("projection", projection);
@@ -662,7 +662,7 @@ namespace TinyRenderer
         public static void Lesson8S1P1Pre()
         {
             //Lesson 8 Section 1 Part 1 Pre: Random unit vector
-            
+
             for (int i = 0; i < 30; i++)
             {
                 float[] eye = ArvnCore.RandomUnitVector();
@@ -684,7 +684,7 @@ namespace TinyRenderer
             ArvnCompatibleShader aoShader = new ArvnCompatibleBFAOTextureShader();
             ArvnRender renderer = ArvnRender.Create();
 
-            for(int i = 0; i < 30; i++)
+            for (int i = 0; i < 30; i++)
             {
                 Console.WriteLine("Iteration" + i);
                 zbuf.Reset();
@@ -736,7 +736,7 @@ namespace TinyRenderer
                 {
                     bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1b.bmp");
                 }
-                
+
             }
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1c.bmp");
         }
@@ -813,7 +813,7 @@ namespace TinyRenderer
             ArvnShader shaderb = new ArvnSSAORenderShader();
             shaderb.SetVariable("viewport", viewport);
             shaderb.SetVariable("depth_map", bitmap);
-            object[] vertexf = { new float[]{ -1, -1,0 }, new float[] { -1, 1, 0 }, new float[] { 1, 1, 0 }, new float[] { 1, -1, 0 } };
+            object[] vertexf = { new float[] { -1, -1, 0 }, new float[] { -1, 1, 0 }, new float[] { 1, 1, 0 }, new float[] { 1, -1, 0 } };
             int[] faceIdxf = { 0, 1, 2, 2, 3, 0 };
             shaderb.SetAttributeVariable("vertex", vertexf);
             renderer.RasterizeTriangles3D(faceIdxf, ref shaderb, ref bitmapb, ref zbufb);
@@ -823,7 +823,8 @@ namespace TinyRenderer
         public static void Lesson9S1()
         {
             //Lesson 9 Section 1: Establish a window
-            Form form = new Form {
+            Form form = new Form
+            {
                 Size = new Size(800, 600),
                 StartPosition = FormStartPosition.CenterScreen
             };
