@@ -21,15 +21,15 @@ namespace TinyRenderer.Applications
         Form form;
         ArvnDoubleBuffer drawBuffer;
         ArvnRender renderer;
-        int lastFrameTimestamp = 0;
-        int frameTimestamp = 0;
+        double lastFrameTimestamp = 0;
+        double frameTimestamp = 0;
         int minLoopTime = 1000 / 30;
-        float fps;
+        double fps;
         public void Run()
         {
             //Buffer
-            IArvnImage buf1 = new ArvnBitmap(800, 600);
-            IArvnImage buf2 = new ArvnBitmap(800, 600);
+            IArvnImage buf1 = new ArvnBufferedBitmap(800, 600);
+            IArvnImage buf2 = new ArvnBufferedBitmap(800, 600);
             drawBuffer = new ArvnDoubleBuffer();
             drawBuffer.SetBuffer(buf1, buf2);
 
@@ -68,13 +68,24 @@ namespace TinyRenderer.Applications
 
             renderer = ArvnRender.Create();
 
+            float t = 0;
             //Render Loop
             while (true)
             {
+                t += 0.01f;
 
+                float radius = 3f;
+                float dx = (float) Math.Cos(t) * radius;
+                float dz = (float) Math.Sin(t) * radius;
+                modelview = ArvnCore.LookAt(new float[] { dx, 1, dz }, new float[] { 0, 0, 0 }, new float[] { 0, 1, 0 });
+                shader.SetVariable("modelview", modelview);
 
                 lastFrameTimestamp = frameTimestamp;
                 frameTimestamp = ArvnTime.GetMiliSecond();
+                if(frameTimestamp< lastFrameTimestamp)
+                {
+                    throw new Exception("AAA");
+                }
                 fps = 1000.0f / (frameTimestamp - lastFrameTimestamp);
 
                 //Render
@@ -90,7 +101,7 @@ namespace TinyRenderer.Applications
                 Application.DoEvents();
                 if (ArvnTime.GetMiliSecond() - frameTimestamp < minLoopTime)
                 {
-                    Thread.Sleep(minLoopTime - (ArvnTime.GetMiliSecond() - frameTimestamp));
+                   // Thread.Sleep(minLoopTime - (ArvnTime.GetMiliSecond() - frameTimestamp));
                 }
             }
 
@@ -107,8 +118,9 @@ namespace TinyRenderer.Applications
         {
             using (var g = Graphics.FromImage((Bitmap)drawBuffer.GetDrawingBuffer().GetImage()))
             {
-                g.DrawString("FPS: " + fps, new Font(new FontFamily("Arial"), 14), Brushes.White, 0, 0);
+                g.DrawString("FPS: " + ((int)(fps * 100)) / 100.0, new Font(new FontFamily("Arial"), 14), Brushes.White, 0, 0);
             }
+            drawBuffer.GetDrawingBuffer().SyncFromImage();
         }
 
     }

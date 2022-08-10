@@ -387,25 +387,27 @@ namespace TinyRenderer.Core
             }
             return nvec;
         }
+        static public float InvSqrt(float x)
+        {
+            float xhalf = 0.5f * x;
+            int i = BitConverter.ToInt32(BitConverter.GetBytes(x), 0);
+            i = 0x5f3759df - (i >> 1);
+            x = BitConverter.ToSingle(BitConverter.GetBytes(i), 0);
+            x = x * (1.5f - xhalf * x * x);
+            return x;
+        }
         static public void NormalizeSelf(ref float[] vec)
         {
             float sq = 0;
-            for (int i = 0; i < vec.Length; i++)
+            int s = vec.Length;
+            for (int i = 0; i < s; i++)
             {
                 sq += vec[i] * vec[i];
             }
-            sq = (float)Math.Sqrt(sq);
-            if (sq < float.Epsilon)
+            sq = (float)InvSqrt(sq);
+            for (int i = 0; i < s; i++)
             {
-                throw new ArvnCoreException("Divide by zero");
-            }
-            for (int i = 0; i < vec.Length; i++)
-            {
-                vec[i] = vec[i] / sq;
-            }
-            if (float.IsNaN(vec[0]))
-            {
-                throw new Exception("Error");
+                vec[i] = vec[i] * sq;
             }
         }
         static public float[] CrossProduct(float[] a, float[] b)
@@ -523,7 +525,7 @@ namespace TinyRenderer.Core
             }
             return det;
         }
-        static public float[,] InverseMatrix(float[,] x)
+        static public float[,] InverseMatrixAdj(float[,] x)
         {
             int o = x.GetLength(0);
             float[,] ret = new float[o, o];
@@ -537,7 +539,7 @@ namespace TinyRenderer.Core
             }
             return ret;
         }
-        static public float[,] InverseTransposedMatrix(float[,] x)
+        static public float[,] InverseTransposedMatrixAdj(float[,] x)
         {
             int o = x.GetLength(0);
             float[,] ret = new float[o, o];
@@ -639,5 +641,149 @@ namespace TinyRenderer.Core
             return new float[] { x, y, z };
         }
 
+        static public float[,] InverseMatrix(float[,] x)
+        {
+            int rows = x.GetLength(0);
+            float[,] mat = new float[rows, 2 * rows];
+            for(int i = 0; i < rows; i++)
+            {
+                for(int j = 0; j < rows * 2; j++)
+                {
+                    if (j < x.GetLength(1))
+                    {
+                        mat[i, j] = x[i, j];
+                    }
+                    else
+                    {
+                        mat[i, j] = (j == i + rows) ? 1 : 0;
+                    }
+                }
+            }
+            
+            for(int i = 0; i < rows; i++)
+            {
+                if (mat[i, i] == 0)
+                {
+                    for(int j = i + 1; j < rows; j++)
+                    {
+                        if (mat[j, i] != 0)
+                        {
+                            for(int k = i; k < rows * 2; k++)
+                            {
+                                mat[i, k] += mat[j, k];
+                            }
+                            break;
+                        }
+                    }
+                }
+                float s = mat[i, i];
+                for(int j = 0; j < rows * 2; j++)
+                {
+                    mat[i, j] /= s;
+                }
+                for(int j = i + 1; j < rows; j++)
+                {
+                    float coef = - mat[j, i];
+                    for(int k = i; k < rows * 2; k++)
+                    {
+                        mat[j, k] += coef * mat[i, k];
+                    }
+                }
+            }
+
+            for (int i = rows - 1; i >= 0; i--)
+            {
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    float e = -1 * (mat[j, i] / mat[i, i]);
+                    for (int r = i; r < 2 * rows; r++)
+                    {
+                        mat[j, r] += e * mat[i, r];
+                    }
+                }
+            }
+
+            float[,] result = new float[rows, rows];
+            for (int i = 0; i < rows; i++)
+            {
+                for (int r = rows; r < 2 * rows; r++)
+                {
+                    result[i, r - rows] = mat[i, r];
+                }
+            }
+            return result;
+        }
+        static public float[,] InverseTransposedMatrix(float[,] x)
+        {
+            int rows = x.GetLength(0);
+            float[,] mat = new float[rows, 2 * rows];
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < rows * 2; j++)
+                {
+                    if (j < rows)
+                    {
+                        mat[i, j] = x[i, j];
+                    }
+                    else
+                    {
+                        mat[i, j] = (j == i + x.GetLength(1)) ? 1 : 0;
+                    }
+                }
+            }
+            
+            for (int i = 0; i < rows; i++)
+            {
+                if (mat[i, i] == 0)
+                {
+                    for (int j = i + 1; j < rows; j++)
+                    {
+                        if (mat[j, i] != 0)
+                        {
+                            for (int k = i; k < rows * 2; k++)
+                            {
+                                mat[i, k] += mat[j, k];
+                            }
+                            break;
+                        }
+                    }
+                }
+                float s = mat[i, i];
+                for (int j = 0; j < rows * 2; j++)
+                {
+                    mat[i, j] /= s;
+                }
+                for (int j = i + 1; j < rows; j++)
+                {
+                    float coef = -mat[j, i];
+                    for (int k = i; k < rows * 2; k++)
+                    {
+                        mat[j, k] += coef * mat[i, k];
+                    }
+                }
+            }
+
+            for (int i = rows - 1; i >= 0; i--)
+            {
+                for (int j = i - 1; j >= 0; j--)
+                {
+                    float e = -1 * (mat[j, i] / mat[i, i]);
+                    for (int r = i; r < 2 * rows; r++)
+                    {
+                        mat[j, r] += e * mat[i, r];
+                    }
+                }
+            }
+
+            float[,] result = new float[rows, rows];
+            for (int i = 0; i < rows; i++)
+            {
+                for (int r = rows; r < 2 * rows; r++)
+                {
+                    result[r - rows, i] = mat[i, r];
+                }
+            }
+            return result;
+        }
     }
 }

@@ -117,11 +117,11 @@ namespace TinyRenderer.Core.Render
                         {
                             continue;
                         }
-                        shader.FragmentShader(new float[] { ta, tb, tc });
-                        float[] color = (float[])shader.GetVariable("arFragColor");
-                        int hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
                         if (zbuf.Get(i, j) < zv)
                         {
+                            shader.FragmentShader(new float[] { ta, tb, tc });
+                            float[] color = (float[])shader.GetVariable("arFragColor");
+                            int hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
                             target.Set(i, j, hexColor);
                             zbuf.Set(i, j, zv);
                         }

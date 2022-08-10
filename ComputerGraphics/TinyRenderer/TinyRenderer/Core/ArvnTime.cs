@@ -8,10 +8,11 @@ namespace TinyRenderer.Core
 {
     class ArvnTime
     {
-        public static int GetMiliSecond()
+        public static double GetMiliSecond()
         {
             DateTime dt = DateTime.Now;
-            return dt.Millisecond;
+            DateTime dx = DateTime.MinValue;
+            return (dt-dx).TotalMilliseconds;
         }
     }
 }

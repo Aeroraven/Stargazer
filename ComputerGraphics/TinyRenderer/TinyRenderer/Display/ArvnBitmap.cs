@@ -4,6 +4,8 @@ using System.Text;
 using System.Drawing;
 using TinyRenderer.Core;
 using TinyRenderer.Core.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace TinyRenderer.Display
 {
@@ -11,12 +13,18 @@ namespace TinyRenderer.Display
     {
         protected int height;
         protected int width;
+        protected byte[] clearbits;
         Bitmap image;
         public ArvnBitmap(int w, int h)
         {
             SetWidth(w);
             SetHeight(h);
             image = new Bitmap(w, h);
+            clearbits = new byte[w * h * 4];
+        }
+        public void SyncFromImage()
+        {
+
         }
         public void GetInNormalized(float x, float y, out float r, out float g, out float b)
         {
@@ -35,13 +43,16 @@ namespace TinyRenderer.Display
         }
         public void Clear(int clearColor)
         {
-            for (int i = 0; i < width; i++)
+            for (int i = 0; i < clearbits.Length; i+=4)
             {
-                for (int j = 0; j < height; j++)
-                {
-                    Set(i, j, clearColor);
-                }
+                clearbits[i + 3] = (byte)(clearColor >> (8 * 3));
+                clearbits[i + 2] = (byte)((clearColor >> (8 * 2)) & 0xff);
+                clearbits[i + 1] = (byte)((clearColor >> (8 * 1)) & 0xff);
+                clearbits[i] = (byte)((clearColor >> (8 * 0)) & 0xff);
             }
+            var bits = image.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, image.PixelFormat);
+            Marshal.Copy(clearbits, 0, bits.Scan0, clearbits.Length);
+            image.UnlockBits(bits);
         }
         public int Get(int x, int y)
         {

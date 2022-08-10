@@ -161,9 +161,9 @@ namespace TinyRenderer.Core.Render
         private void InterpolateVaryings(string varName, float[] bc)
         {
             string tp = varyingTypeList[varName];
-            object a = GetVaryingVariableByVertex(varName, 0);
-            object b = GetVaryingVariableByVertex(varName, 1);
-            object c = GetVaryingVariableByVertex(varName, 2);
+            object a = varyingList[varName][0];
+            object b = varyingList[varName][1];
+            object c = varyingList[varName][2];
             float ta = bc[0];
             float tb = bc[1];
             float tc = bc[2];
@@ -196,10 +196,7 @@ namespace TinyRenderer.Core.Render
                 float dw = ta * ((float[])a)[3] + tb * ((float[])b)[3] + tc * ((float[])c)[3];
                 interpolatedVaryingList[varName] = new float[] { dx, dy, dz, dw };
             }
-            else
-            {
-                throw new ArvnShaderException("Unsupported type");
-            }
+            
         }
         private bool CheckVariable(string typeName, object value)
         {

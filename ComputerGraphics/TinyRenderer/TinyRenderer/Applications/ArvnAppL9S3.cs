@@ -17,9 +17,9 @@ namespace TinyRenderer.Applications
     {
         Form form;
         ArvnDoubleBuffer drawBuffer;
-        int lastFrameTimestamp = 0;
-        int frameTimestamp = 0;
-        float fps;
+        double lastFrameTimestamp = 0;
+        double frameTimestamp = 0;
+        double fps;
         public void Run()
         {
             //Buffer

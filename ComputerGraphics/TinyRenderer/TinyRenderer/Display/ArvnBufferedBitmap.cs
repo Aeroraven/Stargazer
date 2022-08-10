@@ -4,6 +4,9 @@ using System.Text;
 using System.Drawing;
 using TinyRenderer.Core;
 using TinyRenderer.Core.Drawing;
+using System.Runtime.InteropServices;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace TinyRenderer.Display
 {
@@ -12,13 +15,13 @@ namespace TinyRenderer.Display
         protected int height;
         protected int width;
         Bitmap image;
-        int[,] imageBuffer;
+        protected byte[] imageBuffer;
         public ArvnBufferedBitmap(int w, int h)
         {
             SetWidth(w);
             SetHeight(h);
             image = new Bitmap(w, h);
-            imageBuffer = new int[w, h];
+            imageBuffer = new byte[w * h * 4];
         }
         public void GetInNormalized(float x, float y, out float r, out float g, out float b)
         {
@@ -29,23 +32,31 @@ namespace TinyRenderer.Display
             g = ig / 255f;
             b = ib / 255f;
         }
+        public void SyncFromImage()
+        {
+            var bits = image.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadOnly, image.PixelFormat);
+            Marshal.Copy(bits.Scan0, imageBuffer, 0, imageBuffer.Length);
+            image.UnlockBits(bits);
+        }
         public void Load(string path)
         {
-            image = new Bitmap(path);
-            SetWidth(image.Width);
-            SetHeight(image.Height);
-            imageBuffer = new int[image.Width, image.Height];
-            for (int i = 0; i < image.Width; i++)
-            {
-                for (int j = 0; j < image.Height; j++)
-                {
-                    imageBuffer[i, j] = image.GetPixel(i, j).ToArgb();
-                }
-            }
+            var imagew = new Bitmap(path);
+            SetWidth(imagew.Width);
+            SetHeight(imagew.Height);
+            image = new Bitmap(width, height);
+            var p = Graphics.FromImage(image);
+            p.DrawImage(imagew, Point.Empty);
+            imageBuffer = new byte[image.Width * image.Height * 4];
+            SyncFromImage();
         }
         public int Get(int x, int y)
         {
-            return imageBuffer[x, height - 1 - y];
+            int i = (x + (height - 1 - y) * width) * 4;
+            int a = imageBuffer[i + 3];
+            int r = imageBuffer[i + 2];
+            int g = imageBuffer[i + 1];
+            int b = imageBuffer[i + 0];
+            return ((a << 24) | (r << 16) | (g << 8) | (b));
             //return image.GetPixel().ToArgb();
         }
         public int GetInNormalized(float x, float y)
@@ -64,7 +75,13 @@ namespace TinyRenderer.Display
 
         public void Set(int x, int y, int hexColor)
         {
-            imageBuffer[x, height - 1 - y] = hexColor;
+            int i = (x + (height - 1 - y) * width) * 4;
+            imageBuffer[i + 3] = (byte)(hexColor >> (8 * 3));
+            imageBuffer[i + 2] = (byte)((hexColor >> (8 * 2)) & 0xff);
+            imageBuffer[i + 1] = (byte)((hexColor >> (8 * 1)) & 0xff);
+            imageBuffer[i] = (byte)((hexColor >> (8 * 0)) & 0xff);
+
+            //imageBuffer[x, height - 1 - y] = hexColor;
             //image.SetPixel(x, );
         }
 
@@ -80,13 +97,7 @@ namespace TinyRenderer.Display
 
         public void Save(string path)
         {
-            for (int i = 0; i < image.Width; i++)
-            {
-                for (int j = 0; j < image.Height; j++)
-                {
-                    image.SetPixel(i, j, Color.FromArgb(imageBuffer[i, j]));
-                }
-            }
+            SyncFromBuf();
             image.Save(path);
         }
 
@@ -103,13 +114,16 @@ namespace TinyRenderer.Display
         }
         public void Clear(int clearColor)
         {
-            for(int i = 0; i < width; i++)
+            for (int i = 0; i < imageBuffer.Length; i += 4)
             {
-                for(int j = 0; j < height; j++)
-                {
-                    Set(i, j, clearColor);
-                }
+                imageBuffer[i + 3] = (byte)(clearColor >> (8 * 3));
+                imageBuffer[i + 2] = (byte)((clearColor >> (8 * 2)) & 0xff);
+                imageBuffer[i + 1] = (byte)((clearColor >> (8 * 1)) & 0xff);
+                imageBuffer[i] = (byte)((clearColor >> (8 * 0)) & 0xff);
             }
+            var bits = image.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, image.PixelFormat);
+            Marshal.Copy(imageBuffer, 0, bits.Scan0, imageBuffer.Length);
+            image.UnlockBits(bits);
         }
 
         public object GetImage()
@@ -120,13 +134,9 @@ namespace TinyRenderer.Display
 
         public void SyncFromBuf()
         {
-            for (int i = 0; i < image.Width; i++)
-            {
-                for (int j = 0; j < image.Height; j++)
-                {
-                    image.SetPixel(i, j, Color.FromArgb(imageBuffer[i, j]));
-                }
-            }
+            var bits = image.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, image.PixelFormat);
+            Marshal.Copy(imageBuffer, 0, bits.Scan0, imageBuffer.Length);
+            image.UnlockBits(bits);
         }
     }
 }

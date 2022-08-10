@@ -17,10 +17,10 @@ namespace TinyRenderer.Applications
     {
         Form form;
         ArvnDoubleBuffer drawBuffer;
-        int lastFrameTimestamp = 0;
-        int frameTimestamp = 0;
+        double lastFrameTimestamp = 0;
+        double frameTimestamp = 0;
         int minLoopTime = 1000 / 30;
-        float fps;
+        double fps;
         public void Run()
         {
             //Buffer
@@ -47,7 +47,7 @@ namespace TinyRenderer.Applications
                 Application.DoEvents();
                 if (ArvnTime.GetMiliSecond() - frameTimestamp < minLoopTime)
                 {
-                    Thread.Sleep(minLoopTime - (ArvnTime.GetMiliSecond()-frameTimestamp));
+                    Thread.Sleep((int)(minLoopTime - (ArvnTime.GetMiliSecond()-frameTimestamp)));
                 }
             }
 

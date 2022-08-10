@@ -14,9 +14,9 @@ namespace TinyRenderer.Applications
     class ArvnAppL9S2 : IArvnApplication
     {
         Form form;
-        int lastFrameTimestamp = 0;
-        int frameTimestamp = 0;
-        float fps;
+        double lastFrameTimestamp = 0;
+        double frameTimestamp = 0;
+        double fps;
         public void Run()
         {
             form = new Form
@@ -41,7 +41,7 @@ namespace TinyRenderer.Applications
             using(var g = form.CreateGraphics())
             {
                 g.Clear(Color.White);
-                g.DrawString("FPS: " + fps, new Font(new FontFamily("Arial"), 14), Brushes.Black, 0, 0);
+                g.DrawString("FPS: " + ((int)(fps*100))/100.0, new Font(new FontFamily("Arial"), 14), Brushes.Black, 0, 0);
             }
         }
     }
