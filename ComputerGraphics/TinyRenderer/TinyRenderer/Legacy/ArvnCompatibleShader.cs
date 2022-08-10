@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Display;
 using TinyRenderer.Shaders;
+using TinyRenderer.Render;
 
-namespace TinyRenderer
+namespace TinyRenderer.Legacy
 {
     abstract class ArvnCompatibleShader : IArvnShaderCaller
     {
@@ -28,7 +29,7 @@ namespace TinyRenderer
         protected int GetVertexNums()
         {
             int f = -1;
-            foreach(string e in attributeList.Keys)
+            foreach (string e in attributeList.Keys)
             {
                 if (f == -1)
                 {
@@ -44,7 +45,7 @@ namespace TinyRenderer
             }
             return f;
         }
-        protected float[] Vec4f(float r,float g,float b,float a)
+        protected float[] Vec4f(float r, float g, float b, float a)
         {
             return new float[4] { r, g, b, a };
         }
@@ -61,7 +62,7 @@ namespace TinyRenderer
         {
             uniformChanged = false;
         }
-        public void SetAttributeVariable(string varName,object[] value)
+        public void SetAttributeVariable(string varName, object[] value)
         {
             attributeList[varName] = value;
         }
@@ -69,12 +70,12 @@ namespace TinyRenderer
         {
             return attributeList[varName];
         }
-        protected void DefineAttributeVariable(string varName,string typeName)
+        protected void DefineAttributeVariable(string varName, string typeName)
         {
             attributeList[varName] = null;
             attributeTypeList[varName] = typeName;
         }
-        protected void DefineVaryingVariable(string varName,string typeName)
+        protected void DefineVaryingVariable(string varName, string typeName)
         {
             varyingList[varName] = new object[3];
             varyingTypeList[varName] = typeName;
@@ -97,7 +98,7 @@ namespace TinyRenderer
         protected void DefineVertexShaderInput(params string[] typeName)
         {
             vsTypeList.Clear();
-            foreach(string i in typeName)
+            foreach (string i in typeName)
             {
                 vsTypeList.Add(i);
             }
@@ -110,7 +111,7 @@ namespace TinyRenderer
                 fsTypeList.Add(i);
             }
         }
-        protected void DefineVariable(string varName,string typeName,object value)
+        protected void DefineVariable(string varName, string typeName, object value)
         {
             if (typeList.ContainsKey(varName))
             {
@@ -123,12 +124,12 @@ namespace TinyRenderer
         {
             return varList[varName];
         }
-        protected void SetVariableUnsafe(string varName,object value)
+        protected void SetVariableUnsafe(string varName, object value)
         {
             uniformChanged = true;
             varList[varName] = value;
         }
-        public void SetVariable(string varName,object value)
+        public void SetVariable(string varName, object value)
         {
             uniformChanged = true;
             if (CheckVariable(typeList[varName], value))
@@ -140,7 +141,7 @@ namespace TinyRenderer
                 throw new ArvnShaderException("Incorrect type.");
             }
         }
-        private bool CheckVariable(string typeName,object value)
+        private bool CheckVariable(string typeName, object value)
         {
             //Base
             if (typeName == "int")
@@ -168,7 +169,7 @@ namespace TinyRenderer
             }
             if (typeName == "vec3f")
             {
-                if(value is float[] && ((float[])value).Length == 3)
+                if (value is float[] && ((float[])value).Length == 3)
                 {
                     return true;
                 }
@@ -205,14 +206,14 @@ namespace TinyRenderer
             //Texture
             if (typeName == "sampler2d")
             {
-                if(value is IArvnImage)
+                if (value is IArvnImage)
                 {
                     return true;
                 }
             }
             return false;
         }
-        abstract public void VertexShader(int index,int vindex, params object[] input);
+        abstract public void VertexShader(int index, int vindex, params object[] input);
         abstract public void FragmentShader(float[] barycenterCoord, params object[] input);
         abstract public void ComputeDerivedUniforms();
     }

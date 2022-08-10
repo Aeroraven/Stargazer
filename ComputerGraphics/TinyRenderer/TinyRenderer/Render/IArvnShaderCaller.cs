@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace TinyRenderer.Shaders
+namespace TinyRenderer.Render
 {
     interface IArvnShaderCaller
     {

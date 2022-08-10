@@ -6,19 +6,19 @@ using TinyRenderer.Display;
 using TinyRenderer.Render;
 using TinyRenderer.Utility;
 
-namespace TinyRenderer
+namespace TinyRenderer.Legacy
 {
     class Renderer
     {
         static public int RGBToHex(int r, int g, int b)
         {
-            return (0xff << 24) | (r << 16) | (g << 8) | b;
+            return 0xff << 24 | r << 16 | g << 8 | b;
         }
-        static public int RGBScale(int hex,float modf)
+        static public int RGBScale(int hex, float modf)
         {
-            int r = (int)((((0xff << 16) & hex) >> 16) * modf);
-            int g = (int)((((0xff << 8) & hex) >> 8) * modf);
-            int b = (int)((((0xff << 0) & hex) >> 0) * modf);
+            int r = (int)(((0xff << 16 & hex) >> 16) * modf);
+            int g = (int)(((0xff << 8 & hex) >> 8) * modf);
+            int b = (int)(((0xff << 0 & hex) >> 0) * modf);
             return RGBToHex(r, g, b);
 
         }
@@ -113,7 +113,7 @@ namespace TinyRenderer
                 error += slope;
                 if (error > 0.5)
                 {
-                    y += (y1 > y0) ? 1 : -1;
+                    y += y1 > y0 ? 1 : -1;
                     error -= 1;
                 }
             }
@@ -137,7 +137,7 @@ namespace TinyRenderer
             int dy2a = Math.Abs(dy) * 2;
             int error = 0;
             int y = y0;
-            int yi = (y1 > y0) ? 1 : -1;
+            int yi = y1 > y0 ? 1 : -1;
             for (int i = x0; i <= x1; i++)
             {
                 if (!steep)
@@ -207,11 +207,11 @@ namespace TinyRenderer
             int segUpHeight = t2.y - t1.y;
             for (int i = t0.y; i <= t2.y; i++)
             {
-                bool upper = (i > t1.y);
+                bool upper = i > t1.y;
                 float ah = (i - t0.y) / (float)totalHeight;
-                float bh = upper ? ((i - t1.y) / (float)segUpHeight) : ((i - t0.y) / (float)segHeight);
+                float bh = upper ? (i - t1.y) / (float)segUpHeight : (i - t0.y) / (float)segHeight;
                 int ax = (int)(t0.x + (t2.x - t0.x) * ah);
-                int bx = upper ? ((int)(t1.x + (t2.x - t1.x) * bh)) : ((int)(t0.x + (t1.x - t0.x) * bh));
+                int bx = upper ? (int)(t1.x + (t2.x - t1.x) * bh) : (int)(t0.x + (t1.x - t0.x) * bh);
                 if (ax > bx)
                 {
                     ArvnCore.Swap(ref ax, ref bx);
@@ -351,21 +351,21 @@ namespace TinyRenderer
                 }
             }
         }
-        static public void Rasterize2D(int x0, int y0,int x1,int y1, int colorHex, ref IArvnImage target, ref int[] ybuffer)
+        static public void Rasterize2D(int x0, int y0, int x1, int y1, int colorHex, ref IArvnImage target, ref int[] ybuffer)
         {
             Rasterize2D(ArvnVec2i.Create(x0, y0), ArvnVec2i.Create(x1, y1), colorHex, ref target, ref ybuffer);
         }
-                
-        static public void GenerateYBuffer(int width,out int[] buffer)
+
+        static public void GenerateYBuffer(int width, out int[] buffer)
         {
             buffer = new int[width];
-            for(int i = 0; i < width; i++)
+            for (int i = 0; i < width; i++)
             {
                 buffer[i] = ~0;
             }
         }
 
-        static public void RasterizeTriangle3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2, int colorHex, ref IArvnImage target,ref ArvnZBuffer zbuf)
+        static public void RasterizeTriangle3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2, int colorHex, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
             ArvnVec2f bboxMax = ArvnVec2f.Create(0, 0);
             ArvnVec2f bboxMin = ArvnVec2f.Create(target.GetWidth(), target.GetHeight());
@@ -403,14 +403,14 @@ namespace TinyRenderer
                             target.Set(i, j, colorHex);
                             zbuf.Set(i, j, zv);
                         }
-                        
+
                     }
                 }
             }
         }
-        static public void RasterizeTriangleTextured3D(ArvnVec3f tv0, ArvnVec3f tv1, ArvnVec3f tv2, ArvnVec3f vt0,ArvnVec3f vt1,ArvnVec3f vt2,IArvnImage texture, float fade, ref IArvnImage target, ref ArvnZBuffer zbuf,float[,] projection)
+        static public void RasterizeTriangleTextured3D(ArvnVec3f tv0, ArvnVec3f tv1, ArvnVec3f tv2, ArvnVec3f vt0, ArvnVec3f vt1, ArvnVec3f vt2, IArvnImage texture, float fade, ref IArvnImage target, ref ArvnZBuffer zbuf, float[,] projection)
         {
-            float[,] projMat = (projection == null) ? ArvnCore.IdentityMatrix(4) : projection;
+            float[,] projMat = projection == null ? ArvnCore.IdentityMatrix(4) : projection;
             ArvnVec3f t0 = tv0.Copy();
             ArvnVec3f t1 = tv1.Copy();
             ArvnVec3f t2 = tv2.Copy();
@@ -449,11 +449,11 @@ namespace TinyRenderer
                     ArvnCore.ToBarycentric(i, j, t0.x, t0.y, t1.x, t1.y, t2.x, t2.y, out ta, out tb, out tc);
                     if (ta >= 0 && tb >= 0 & tc >= 0)
                     {
-                        float zv = (ta * t0.z + tb * t1.z + tc * t2.z);
+                        float zv = ta * t0.z + tb * t1.z + tc * t2.z;
                         int color = GetTexturePixel(vt0, vt1, vt2, ArvnVec3f.Create(ta, tb, tc), texture);
                         if (zbuf.Get(i, j) < zv)
                         {
-                            target.Set(i, j, RGBScale(color,fade));
+                            target.Set(i, j, RGBScale(color, fade));
                             zbuf.Set(i, j, zv);
                         }
 
@@ -461,16 +461,16 @@ namespace TinyRenderer
                 }
             }
         }
-        static public int GetTexturePixel(ArvnVec3f ta,ArvnVec3f tb, ArvnVec3f tc,ArvnVec3f bccoord,IArvnImage texture)
+        static public int GetTexturePixel(ArvnVec3f ta, ArvnVec3f tb, ArvnVec3f tc, ArvnVec3f bccoord, IArvnImage texture)
         {
             //barycenter = aOA+bOB+cOC
             float dx = bccoord.x * ta.x + bccoord.y * tb.x + bccoord.z * tc.x;
             float dy = bccoord.x * ta.y + bccoord.y * tb.y + bccoord.z * tc.y;
-            int px = (int)((dx) * (texture.GetWidth() - 1));
-            int py = (int)((dy) * (texture.GetHeight() - 1));
+            int px = (int)(dx * (texture.GetWidth() - 1));
+            int py = (int)(dy * (texture.GetHeight() - 1));
             return texture.Get(px, py);
         }
-        static public void RasterizeFlatShading3D(ArvnMesh model, ArvnVec3f lightDirection, ref IArvnImage target,ref ArvnZBuffer zbuf)
+        static public void RasterizeFlatShading3D(ArvnMesh model, ArvnVec3f lightDirection, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
 
             for (int i = 0; i < model.GetFaceNums(); i++)
@@ -505,9 +505,9 @@ namespace TinyRenderer
 
             }
         }
-        static public void RasterizeFlatShadingTextured3D(ArvnMesh model, ArvnVec3f lightDirection,IArvnImage texture, ref IArvnImage target, ref ArvnZBuffer zbuf,bool nw, float[,]? projection,float[,]? viewport)
+        static public void RasterizeFlatShadingTextured3D(ArvnMesh model, ArvnVec3f lightDirection, IArvnImage texture, ref IArvnImage target, ref ArvnZBuffer zbuf, bool nw, float[,] projection, float[,] viewport)
         {
-            float[,] projMat = (projection == null) ? ArvnCore.IdentityMatrix(4) : projection;
+            float[,] projMat = projection == null ? ArvnCore.IdentityMatrix(4) : projection;
             for (int i = 0; i < model.GetFaceNums(); i++)
             {
                 int[] fidx = { 0, 0, 0 };
@@ -524,13 +524,13 @@ namespace TinyRenderer
                 ArvnVec3f[] tx = { ArvnVec3f.Create(), ArvnVec3f.Create(), ArvnVec3f.Create() };
                 model.GetFace(i, out fidx[0], out fidx[1], out fidx[2]);
                 model.GetFaceVertexIdx(i, out ftidx[0], out ftidx[1], out ftidx[2]);
-                float[,] composed = (viewport == null || projection == null) ? null : ArvnCore.MatrixMultiply(viewport, projection);
+                float[,] composed = viewport == null || projection == null ? null : ArvnCore.MatrixMultiply(viewport, projection);
                 for (int j = 0; j < 3; j++)
                 {
                     model.GetVertex(fidx[j], out dx[j], out dy[j], out dz[j]);
                     model.GetTextureVertex(ftidx[j], out tx[j].x, out tx[j].y, out tx[j].z);
 
-                    
+
                     if (nw == false)
                     {
                         sx[j].x = dx[j];
@@ -553,13 +553,13 @@ namespace TinyRenderer
                 ArvnCore.GetTriangleNormal(sx[0], sx[1], sx[2], out nx, out ny, out nz);
                 ArvnCore.NormalizeVec3f(ref nx, ref ny, ref nz);
                 float intensity = ArvnCore.DotProduct(nx, ny, nz, lightDirection.x, lightDirection.y, lightDirection.z);
-                
+
                 if (intensity > 0)
                 {
                     int it = (int)(intensity * 255);
                     int cl = RGBToHex(it, it, it);
 
-                    RasterizeTriangleTextured3D(vx[0], vx[1], vx[2], tx[0], tx[1], tx[2], texture, it/255.0f, ref target, ref zbuf,null);
+                    RasterizeTriangleTextured3D(vx[0], vx[1], vx[2], tx[0], tx[1], tx[2], texture, it / 255.0f, ref target, ref zbuf, null);
                 }
 
             }

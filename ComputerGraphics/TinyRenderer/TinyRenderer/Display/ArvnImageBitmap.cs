@@ -61,7 +61,7 @@ namespace TinyRenderer.Display
             return image.Width;
         }
 
-        public override void Set(int x, int y, int hexColor)
+        public void Set(int x, int y, int hexColor)
         {
             imageBuffer[x, height - 1 - y] = hexColor;
             //image.SetPixel(x, );

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Drawing;
+using System.Windows.Forms;
 using TinyRenderer.Core;
 using TinyRenderer.Display;
+using TinyRenderer.Legacy;
 using TinyRenderer.Render;
 using TinyRenderer.Shaders;
 using TinyRenderer.Utility;
 
 namespace TinyRenderer
 {
-    class Program
+    class TinyRenderer
     {
         static void Lesson0()
         {
@@ -821,10 +823,16 @@ namespace TinyRenderer
         public static void Lesson9S1()
         {
             //Lesson 9 Section 1: Establish a window
+            Form form = new Form {
+                Size = new Size(800, 600),
+                StartPosition = FormStartPosition.CenterScreen
+            };
+            form.Show();
+
         }
         static void Main(string[] args)
         {
-            Lesson8S2();
+            Lesson9S1();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
 using TinyRenderer.Display;
+using TinyRenderer.Legacy;
 using TinyRenderer.Shaders;
 
 namespace TinyRenderer.Render
