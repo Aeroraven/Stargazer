@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
+using TinyRenderer.Core.Drawing;
 using TinyRenderer.Display;
 using TinyRenderer.Legacy;
 
@@ -17,7 +18,7 @@ namespace TinyRenderer.Shaders
             DefineVariable("projection", "mat4f", new float[4, 4]);
             DefineVariable("viewport", "mat4f", new float[4, 4]);
             DefineVariable("lightdir", "vec3f", new float[3]);
-            DefineVariable("diffuse_texture", "sampler2d", new ArvnImageBitmap(1, 1));
+            DefineVariable("diffuse_texture", "sampler2d", new ArvnBufferedBitmap(1, 1));
 
             DefineVariable("version", "int", 1);
 

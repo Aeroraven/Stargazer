@@ -46,9 +46,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Applications\ArvnAppL9S1.cs" />
+    <Compile Include="Applications\ArvnAppL9S2.cs" />
+    <Compile Include="Applications\ArvnAppL9S3.cs" />
+    <Compile Include="Core\Application\IArvnApplication.cs" />
     <Compile Include="Core\ArvnCore.cs" />
-    <Compile Include="Display\ArvnImageBitmap.cs" />
-    <Compile Include="Display\IArvnImage.cs" />
+    <Compile Include="Core\ArvnTime.cs" />
+    <Compile Include="Core\Drawing\ArvnDoubleBuffer.cs" />
+    <Compile Include="Display\ArvnBitmap.cs" />
+    <Compile Include="Display\ArvnBufferedBitmap.cs" />
+    <Compile Include="Core\Drawing\IArvnImage.cs" />
     <Compile Include="Legacy\ArvnCompatibleShader.cs" />
     <Compile Include="Legacy\ArvnVec2f.cs" />
     <Compile Include="Legacy\ArvnVec2i.cs" />
@@ -56,10 +63,10 @@
     <Compile Include="Legacy\Renderer.cs" />
     <Compile Include="TinyRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Render\ArvnRender.cs" />
-    <Compile Include="Render\ArvnShader.cs" />
-    <Compile Include="Render\ArvnZBuffer.cs" />
-    <Compile Include="Render\IArvnShaderCaller.cs" />
+    <Compile Include="Core\Render\ArvnRender.cs" />
+    <Compile Include="Core\Render\ArvnShader.cs" />
+    <Compile Include="Core\Render\ArvnZBuffer.cs" />
+    <Compile Include="Core\Render\IArvnShaderCaller.cs" />
     <Compile Include="Shaders\ArvnCompatibleBFAOTextureShader.cs" />
     <Compile Include="Shaders\ArvnCompatibleDepthShader.cs" />
     <Compile Include="Shaders\ArvnCompatibleShadowShader.cs" />

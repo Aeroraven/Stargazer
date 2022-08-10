@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
-using TinyRenderer.Display;
-using TinyRenderer.Render;
+using TinyRenderer.Core.Drawing;
+using TinyRenderer.Core.Render;
 using TinyRenderer.Utility;
 
 namespace TinyRenderer.Legacy

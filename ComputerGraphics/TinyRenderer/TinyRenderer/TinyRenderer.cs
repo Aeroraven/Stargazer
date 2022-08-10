@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Drawing;
-using System.Windows.Forms;
 using TinyRenderer.Core;
+using TinyRenderer.Core.Drawing;
+using TinyRenderer.Core.Render;
+using TinyRenderer.Applications;
+using TinyRenderer.Core.Application;
 using TinyRenderer.Display;
 using TinyRenderer.Legacy;
-using TinyRenderer.Render;
 using TinyRenderer.Shaders;
 using TinyRenderer.Utility;
 
@@ -16,7 +17,7 @@ namespace TinyRenderer
         {
             //Lesson 0: Draw a dot on an image
 
-            IArvnImage bitmap = new ArvnImageBitmap(100, 100);
+            IArvnImage bitmap = new ArvnBufferedBitmap(100, 100);
             bitmap.Set(52, 41, Renderer.RGBToHex(255, 0, 0));
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l0.bmp");
         }
@@ -24,7 +25,7 @@ namespace TinyRenderer
         {
             //Lesson 1 Section 1: Draw a line segment
 
-            IArvnImage bitmap = new ArvnImageBitmap(100, 100);
+            IArvnImage bitmap = new ArvnBufferedBitmap(100, 100);
             Renderer.DrawLineV1(10, 10, 20, 30, Renderer.RGBToHex(255, 0, 0), ref bitmap);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l1s1.bmp");
         }
@@ -33,7 +34,7 @@ namespace TinyRenderer
         {
             //Lesson 1 Section 2: Refine the algorithm which requires constant increment.
 
-            IArvnImage bitmap = new ArvnImageBitmap(100, 100);
+            IArvnImage bitmap = new ArvnBufferedBitmap(100, 100);
             Renderer.DrawLineV2(13, 20, 80, 40, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV2(20, 13, 40, 80, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV2(80, 40, 13, 20, Renderer.RGBToHex(255, 255, 255), ref bitmap);
@@ -44,7 +45,7 @@ namespace TinyRenderer
         {
             //Lesson 1 Section 3: Fix the problem that the algorithm outputs holes
 
-            IArvnImage bitmap = new ArvnImageBitmap(100, 100);
+            IArvnImage bitmap = new ArvnBufferedBitmap(100, 100);
             Renderer.DrawLineV3(13, 20, 80, 40, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV3(20, 13, 40, 80, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV3(80, 40, 13, 20, Renderer.RGBToHex(255, 255, 255), ref bitmap);
@@ -54,7 +55,7 @@ namespace TinyRenderer
         {
             //Lesson 1 Section 4: Reduce redudant expressions.
 
-            IArvnImage bitmap = new ArvnImageBitmap(100, 100);
+            IArvnImage bitmap = new ArvnBufferedBitmap(100, 100);
             Renderer.DrawLineV4(13, 20, 80, 40, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV4(20, 13, 40, 80, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV4(80, 40, 13, 20, Renderer.RGBToHex(255, 255, 255), ref bitmap);
@@ -64,7 +65,7 @@ namespace TinyRenderer
         {
             //Lesson 1 Section 5: [Brehensam Line Drawing Algorithm] Avoid float-point numbers.
 
-            IArvnImage bitmap = new ArvnImageBitmap(100, 100);
+            IArvnImage bitmap = new ArvnBufferedBitmap(100, 100);
             Renderer.DrawLineV5(13, 20, 80, 40, Renderer.RGBToHex(255, 255, 255), ref bitmap);
             Renderer.DrawLineV5(20, 13, 40, 80, Renderer.RGBToHex(255, 0, 0), ref bitmap);
             Renderer.DrawLineV5(80, 40, 13, 20, Renderer.RGBToHex(255, 0, 0), ref bitmap);
@@ -74,7 +75,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 1 Part 1: Drawing a hollow triangle
 
-            IArvnImage bitmap = new ArvnImageBitmap(200, 200);
+            IArvnImage bitmap = new ArvnBufferedBitmap(200, 200);
             ArvnVec2i[] t0 = { ArvnVec2i.Create(10, 70), ArvnVec2i.Create(50, 160), ArvnVec2i.Create(70, 80) };
             ArvnVec2i[] t1 = { ArvnVec2i.Create(180, 50), ArvnVec2i.Create(150, 1), ArvnVec2i.Create(70, 180) };
             ArvnVec2i[] t2 = { ArvnVec2i.Create(180, 150), ArvnVec2i.Create(120, 160), ArvnVec2i.Create(130, 180) };
@@ -88,7 +89,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 1 Part 2: Sorting vertices according to y-coordinate
 
-            IArvnImage bitmap = new ArvnImageBitmap(200, 200);
+            IArvnImage bitmap = new ArvnBufferedBitmap(200, 200);
             ArvnVec2i[] t0 = { ArvnVec2i.Create(10, 70), ArvnVec2i.Create(50, 160), ArvnVec2i.Create(70, 80) };
             ArvnVec2i[] t1 = { ArvnVec2i.Create(180, 50), ArvnVec2i.Create(150, 1), ArvnVec2i.Create(70, 180) };
             ArvnVec2i[] t2 = { ArvnVec2i.Create(180, 150), ArvnVec2i.Create(120, 160), ArvnVec2i.Create(130, 180) };
@@ -102,7 +103,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 1 Part 3: Fill the lower area
 
-            IArvnImage bitmap = new ArvnImageBitmap(200, 200);
+            IArvnImage bitmap = new ArvnBufferedBitmap(200, 200);
             ArvnVec2i[] t0 = { ArvnVec2i.Create(10, 70), ArvnVec2i.Create(50, 160), ArvnVec2i.Create(70, 80) };
             ArvnVec2i[] t1 = { ArvnVec2i.Create(180, 50), ArvnVec2i.Create(150, 1), ArvnVec2i.Create(70, 180) };
             ArvnVec2i[] t2 = { ArvnVec2i.Create(180, 150), ArvnVec2i.Create(120, 160), ArvnVec2i.Create(130, 180) };
@@ -117,7 +118,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 1 Part 4: [Line Sweeping Algorithm] Fill the whole triangle
 
-            IArvnImage bitmap = new ArvnImageBitmap(200, 200);
+            IArvnImage bitmap = new ArvnBufferedBitmap(200, 200);
             ArvnVec2i[] t0 = { ArvnVec2i.Create(10, 70), ArvnVec2i.Create(50, 160), ArvnVec2i.Create(70, 80) };
             ArvnVec2i[] t1 = { ArvnVec2i.Create(180, 50), ArvnVec2i.Create(150, 1), ArvnVec2i.Create(70, 180) };
             ArvnVec2i[] t2 = { ArvnVec2i.Create(180, 150), ArvnVec2i.Create(120, 160), ArvnVec2i.Create(130, 180) };
@@ -130,7 +131,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 2: [Triangle Filling] Fill using bounding box
 
-            IArvnImage bitmap = new ArvnImageBitmap(200, 200);
+            IArvnImage bitmap = new ArvnBufferedBitmap(200, 200);
             ArvnVec2i[] t0 = { ArvnVec2i.Create(10, 70), ArvnVec2i.Create(50, 160), ArvnVec2i.Create(70, 80) };
             ArvnVec2i[] t1 = { ArvnVec2i.Create(180, 50), ArvnVec2i.Create(150, 1), ArvnVec2i.Create(70, 180) };
             ArvnVec2i[] t2 = { ArvnVec2i.Create(180, 150), ArvnVec2i.Create(120, 160), ArvnVec2i.Create(130, 180) };
@@ -144,7 +145,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 3 Part 1: Wireframe Rendering
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
             Renderer.DrawWireMesh(model, Renderer.RGBToHex(255, 255, 255), ref bitmap);
@@ -155,7 +156,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 3 Part 2: Flat Shading Rendering
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
             Renderer.DrawFlatShadingV1(model, ref bitmap);
@@ -166,7 +167,7 @@ namespace TinyRenderer
         {
             //Lesson 2 Section 3 Part 3: Back Face Culling
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
@@ -178,7 +179,7 @@ namespace TinyRenderer
         {
             //Lesson 3 Section 1 Part 1: 2D scene at sideway viewpoint
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             Renderer.DrawLineV5(20, 34, 744, 400, Renderer.RGBToHex(255, 0, 0), ref bitmap);
             Renderer.DrawLineV5(120, 434, 444, 400, Renderer.RGBToHex(0, 255, 0), ref bitmap);
             Renderer.DrawLineV5(330, 463, 594, 200, Renderer.RGBToHex(0, 0, 255), ref bitmap);
@@ -190,7 +191,7 @@ namespace TinyRenderer
         {
             //Lesson 3 Section 1 Part 2: Rasterize on 1D Screen
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 1);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 1);
             int[] ybuffer;
             Renderer.GenerateYBuffer(800, out ybuffer);
             Renderer.Rasterize2D(20, 34, 744, 400, Renderer.RGBToHex(255, 0, 0), ref bitmap, ref ybuffer);
@@ -203,7 +204,7 @@ namespace TinyRenderer
         {
             //Lesson 3 Section 2: Rasterize Mesh
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
             ArvnMesh model = new ArvnMesh();
@@ -216,12 +217,12 @@ namespace TinyRenderer
         {
             //Lesson 3 Section 3: Attach diffuse texture
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
             Renderer.RasterizeFlatShadingTextured3D(model, light, texture, ref bitmap, ref zbuf, false, null, null);
             bitmap.Save("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l3s3.bmp");
@@ -231,7 +232,7 @@ namespace TinyRenderer
         {
             //Lesson 4 Section 1 Part 1: Perform scale transformation
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
             ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
 
@@ -255,7 +256,7 @@ namespace TinyRenderer
         static void Lesson4S1P2()
         {
             //Lesson 4 Section 1 Part 2: Perform Composite transform
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
             ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
 
@@ -281,7 +282,7 @@ namespace TinyRenderer
         {
             //Lesson 4 Section 2 Part 1: Perform Composite transform in Homogeneous coordinate
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
             ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
 
@@ -306,7 +307,7 @@ namespace TinyRenderer
         static void Lesson4S2P2()
         {
             //Lesson 4 Section 2 Part 2: 2D Viewport
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnVec2f[] p = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
             ArvnVec2f[] q = { ArvnVec2f.Create(-1, -1), ArvnVec2f.Create(1, -1), ArvnVec2f.Create(1, 0), ArvnVec2f.Create(0, 1), ArvnVec2f.Create(-1, 1) };
             float[,] vp = ArvnCore.RectViewportMatrix2D(800, 800, 2, 2);
@@ -338,12 +339,12 @@ namespace TinyRenderer
         {
             //Lesson 4 Section 3: Project in 3D
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnVec3f light = ArvnVec3f.Create(0, 0, -1);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
             float[,] projection = ArvnCore.IdentityMatrix(4);
             projection[3, 2] = -1;
@@ -358,11 +359,11 @@ namespace TinyRenderer
             //Lesson 5~6 Section 1: Shader & Refactoring & Vertex Normal
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
 
 
@@ -395,11 +396,11 @@ namespace TinyRenderer
             //Lesson 5~6 Section 2: Look At & Projection
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
 
             //Shader
@@ -432,11 +433,11 @@ namespace TinyRenderer
             //Lesson 6 Section 3: Attach texture using shader
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
 
             //Shader
@@ -474,13 +475,13 @@ namespace TinyRenderer
             //Lesson 6 Section 4: Transform of normals & Specular mapping
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
-            IArvnImage specularTexture = new ArvnImageBitmap(50, 50);
+            IArvnImage specularTexture = new ArvnBufferedBitmap(50, 50);
             specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
 
             //Shader
@@ -517,15 +518,15 @@ namespace TinyRenderer
             //Lesson 6 Section 5 : Tangent space & Normal mapping
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
-            IArvnImage specularTexture = new ArvnImageBitmap(50, 50);
+            IArvnImage specularTexture = new ArvnBufferedBitmap(50, 50);
             specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
-            IArvnImage normalTexture = new ArvnImageBitmap(50, 50);
+            IArvnImage normalTexture = new ArvnBufferedBitmap(50, 50);
             normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
 
             //Shader
@@ -563,7 +564,7 @@ namespace TinyRenderer
             //Lesson 7 Section 1: Depth Shader
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
@@ -594,17 +595,17 @@ namespace TinyRenderer
         {
             //Lesson 7 Section 2: Shadow Mapping
 
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
-            IArvnImage shadowMap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
+            IArvnImage shadowMap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zDepthBuf = ArvnZBuffer.Create(800, 800);
             ArvnZBuffer zBuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\texture.jpg");
-            IArvnImage specularTexture = new ArvnImageBitmap(50, 50);
+            IArvnImage specularTexture = new ArvnBufferedBitmap(50, 50);
             specularTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\specular.jpg");
-            IArvnImage normalTexture = new ArvnImageBitmap(50, 50);
+            IArvnImage normalTexture = new ArvnBufferedBitmap(50, 50);
             normalTexture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\normal.jpg");
             ArvnCompatibleShader depthShader = new ArvnCompatibleDepthShader();
             ArvnCompatibleShader shadowShader = new ArvnCompatibleShadowShader();
@@ -674,8 +675,8 @@ namespace TinyRenderer
             //Lesson 8 Section 1 Part 1: Ambient occlusion in BF Algorithm / Visibility information calculation & Exporting AO texture
 
             //Environment
-            IArvnImage depthMap = new ArvnImageBitmap(800, 800);
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage depthMap = new ArvnBufferedBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnZBuffer zbufb = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
@@ -746,11 +747,11 @@ namespace TinyRenderer
             //Lesson 8 Section 1 Part 2: AO Texture & Shader refactoring
 
             //Environment
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
             model.ParseFromWavefront("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\src.obj");
-            IArvnImage texture = new ArvnImageBitmap(50, 50);
+            IArvnImage texture = new ArvnBufferedBitmap(50, 50);
             texture.Load("D:\\WR\\Stargazer\\ComputerGraphics\\TinyRenderer\\l8s1p1c.bmp");
 
             //Shader
@@ -780,8 +781,8 @@ namespace TinyRenderer
             //Lesson 8 Section 2: Plain Screen Space Ambient Occlusion （SSAO)
 
             //Objects
-            IArvnImage bitmap = new ArvnImageBitmap(800, 800);
-            IArvnImage bitmapb = new ArvnImageBitmap(800, 800);
+            IArvnImage bitmap = new ArvnBufferedBitmap(800, 800);
+            IArvnImage bitmapb = new ArvnBufferedBitmap(800, 800);
             ArvnZBuffer zbuf = ArvnZBuffer.Create(800, 800);
             ArvnZBuffer zbufb = ArvnZBuffer.Create(800, 800);
             ArvnMesh model = new ArvnMesh();
@@ -822,18 +823,30 @@ namespace TinyRenderer
 
         public static void Lesson9S1()
         {
-            //Lesson 9 Section 1: Establish a window
-            Form form = new Form
-            {
-                Size = new Size(800, 600),
-                StartPosition = FormStartPosition.CenterScreen
-            };
-            form.Show();
+            //Lesson 9 Section 1: Establish a window & Loop
 
+            IArvnApplication app = new ArvnAppL9S1();
+            app.Run();
+        }
+
+        public static void Lesson9S2()
+        {
+            //Lesson 9 Section 2: Frame rate & Drawing on the window
+
+            IArvnApplication app = new ArvnAppL9S2();
+            app.Run();
+        }
+
+        public static void Lesson9S3()
+        {
+            //Lesson 9 Section 3: Double buffering
+
+            IArvnApplication app = new ArvnAppL9S3();
+            app.Run();
         }
         static void Main(string[] args)
         {
-            Lesson9S1();
+            Lesson9S3();
         }
     }
 }

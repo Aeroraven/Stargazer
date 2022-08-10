@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
-using TinyRenderer.Render;
+using TinyRenderer.Core.Render;
 
 namespace TinyRenderer.Shaders
 {

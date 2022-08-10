@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
-using TinyRenderer.Display;
+using TinyRenderer.Core.Drawing;
 using TinyRenderer.Legacy;
 using TinyRenderer.Shaders;
 
-namespace TinyRenderer.Render
+namespace TinyRenderer.Core.Render
 {
     class ArvnRender
     {

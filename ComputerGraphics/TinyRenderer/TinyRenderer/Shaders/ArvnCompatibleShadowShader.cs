@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
+using TinyRenderer.Core.Drawing;
 using TinyRenderer.Display;
 using TinyRenderer.Legacy;
 
@@ -34,10 +35,10 @@ namespace TinyRenderer.Shaders
             DefineVariable("depth_remap", "mat4f", new float[4, 4]);
 
             DefineVariable("lightdir", "vec3f", new float[3]);
-            DefineVariable("diffuse_texture", "sampler2d", new ArvnImageBitmap(1, 1));
-            DefineVariable("spec_texture", "sampler2d", new ArvnImageBitmap(1, 1));
-            DefineVariable("normal_texture", "sampler2d", new ArvnImageBitmap(1, 1));
-            DefineVariable("depth_map", "sampler2d", new ArvnImageBitmap(1, 1));
+            DefineVariable("diffuse_texture", "sampler2d", new ArvnBufferedBitmap(1, 1));
+            DefineVariable("spec_texture", "sampler2d", new ArvnBufferedBitmap(1, 1));
+            DefineVariable("normal_texture", "sampler2d", new ArvnBufferedBitmap(1, 1));
+            DefineVariable("depth_map", "sampler2d", new ArvnBufferedBitmap(1, 1));
 
             DefineVariable("projection_model", "mat4f", new float[4, 4]);
             DefineVariable("projection_model_inverse", "mat4f", new float[4, 4]);

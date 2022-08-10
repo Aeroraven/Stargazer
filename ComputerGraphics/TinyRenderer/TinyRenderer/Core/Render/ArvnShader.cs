@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TinyRenderer.Display;
+using TinyRenderer.Core.Drawing;
 using TinyRenderer.Shaders;
 
-namespace TinyRenderer.Render
+namespace TinyRenderer.Core.Render
 {
     abstract class ArvnShader : IArvnShaderCaller
     {
@@ -55,9 +55,9 @@ namespace TinyRenderer.Render
         }
         protected float[] Vec3f(float r, float g, float b)
         {
-            return new float[3] { r, g, b};
+            return new float[3] { r, g, b };
         }
-        protected float[] Vec2f(float x,float y)
+        protected float[] Vec2f(float x, float y)
         {
             return new float[2] { x, y };
         }
@@ -158,7 +158,7 @@ namespace TinyRenderer.Render
                 throw new ArvnShaderException("Incorrect type.");
             }
         }
-        private void InterpolateVaryings(string varName,float[] bc)
+        private void InterpolateVaryings(string varName, float[] bc)
         {
             string tp = varyingTypeList[varName];
             object a = GetVaryingVariableByVertex(varName, 0);
@@ -173,7 +173,7 @@ namespace TinyRenderer.Render
             }
             else if (tp == "float")
             {
-               interpolatedVaryingList[varName] = ta * (float)a + tb * (float)b + tc * (float)c;
+                interpolatedVaryingList[varName] = ta * (float)a + tb * (float)b + tc * (float)c;
             }
             else if (tp == "vec2f")
             {
@@ -275,7 +275,7 @@ namespace TinyRenderer.Render
         }
         public void FragmentShader(float[] barycenterCoord, params object[] input)
         {
-            foreach(string i in varyingList.Keys)
+            foreach (string i in varyingList.Keys)
             {
                 InterpolateVaryings(i, barycenterCoord);
             }

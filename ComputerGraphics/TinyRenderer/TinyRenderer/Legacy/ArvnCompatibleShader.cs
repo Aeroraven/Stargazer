@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using TinyRenderer.Display;
 using TinyRenderer.Shaders;
-using TinyRenderer.Render;
+using TinyRenderer.Core.Drawing;
+using TinyRenderer.Core.Render;
 
 namespace TinyRenderer.Legacy
 {

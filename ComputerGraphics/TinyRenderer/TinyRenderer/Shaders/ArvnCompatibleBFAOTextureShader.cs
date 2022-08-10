@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core;
+using TinyRenderer.Core.Drawing;
 using TinyRenderer.Display;
 using TinyRenderer.Legacy;
 
@@ -19,8 +20,8 @@ namespace TinyRenderer.Shaders
             //Uniforms
             DefineVariable("viewport", "mat4f", new float[4, 4]);
             DefineVariable("iteration", "int", 0);
-            DefineVariable("depth_map", "sampler2d", new ArvnImageBitmap(1, 1));
-            DefineVariable("ao_map", "sampler2d", new ArvnImageBitmap(1, 1));
+            DefineVariable("depth_map", "sampler2d", new ArvnBufferedBitmap(1, 1));
+            DefineVariable("ao_map", "sampler2d", new ArvnBufferedBitmap(1, 1));
             DefineVariable("depth_remap", "mat4f", new float[4, 4]);
 
             //Varying

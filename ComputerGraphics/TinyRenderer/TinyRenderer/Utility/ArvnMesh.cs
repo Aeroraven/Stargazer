@@ -129,7 +129,7 @@ namespace TinyRenderer.Utility
             while ((line = sr.ReadLine()) != null)
             {
                 line = line.Replace("  ", " ");
-                string[] el = line.Split(" ");
+                string[] el = line.Split(' ');
                 if (el[0] == "v")
                 {
                     vNums++;
@@ -156,7 +156,7 @@ namespace TinyRenderer.Utility
                     fNums++;
                     for (int i = 1; i <= 3; i++)
                     {
-                        string[] g = el[i].Split("/");
+                        string[] g = el[i].Split('/');
                         faces.Add(int.Parse(g[0]));
                         if (g.Length >= 1)
                         {

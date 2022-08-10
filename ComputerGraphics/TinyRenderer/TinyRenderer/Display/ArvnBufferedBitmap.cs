@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using TinyRenderer.Core;
+using TinyRenderer.Core.Drawing;
 
 namespace TinyRenderer.Display
 {
-    class ArvnImageBitmap : IArvnImage
+    class ArvnBufferedBitmap : IArvnImage
     {
         protected int height;
         protected int width;
         Bitmap image;
         int[,] imageBuffer;
-        public ArvnImageBitmap(int w, int h)
+        public ArvnBufferedBitmap(int w, int h)
         {
             SetWidth(w);
             SetHeight(h);
@@ -99,6 +100,23 @@ namespace TinyRenderer.Display
             g = ig / 255f;
             b = ib / 255f;
             return new float[] { r, g, b };
+        }
+
+        public object GetImage()
+        {
+            SyncFromBuf();
+            return image;
+        }
+
+        public void SyncFromBuf()
+        {
+            for (int i = 0; i < image.Width; i++)
+            {
+                for (int j = 0; j < image.Height; j++)
+                {
+                    image.SetPixel(i, j, Color.FromArgb(imageBuffer[i, j]));
+                }
+            }
         }
     }
 }
