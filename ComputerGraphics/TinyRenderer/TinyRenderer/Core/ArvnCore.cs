@@ -139,6 +139,7 @@ namespace TinyRenderer.Core
             oy /= ow;
             oz /= ow;
         }
+
         static public void MatrixMultiplyI(float[,] a, float[,] b, out float[,] c)
         {
             int ar = a.GetLength(0);

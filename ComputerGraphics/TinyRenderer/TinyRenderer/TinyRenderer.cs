@@ -844,9 +844,26 @@ namespace TinyRenderer
             IArvnApplication app = new ArvnAppL9S3();
             app.Run();
         }
+
+        public static void Lesson9S4()
+        {
+            //Lesson 9 Section 4: Frame rate limit
+
+            IArvnApplication app = new ArvnAppL9S4();
+            app.Run();
+        }
+
+        public static void Lesson9S5()
+        {
+            //Lesson 9 Section 5: Draw the mesh in the window
+
+            IArvnApplication app = new ArvnAppL9S5();
+            app.Run();
+        }
+
         static void Main(string[] args)
         {
-            Lesson9S3();
+            Lesson9S5();
         }
     }
 }

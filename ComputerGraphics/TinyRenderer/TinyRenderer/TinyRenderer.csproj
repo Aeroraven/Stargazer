@@ -49,6 +49,8 @@
     <Compile Include="Applications\ArvnAppL9S1.cs" />
     <Compile Include="Applications\ArvnAppL9S2.cs" />
     <Compile Include="Applications\ArvnAppL9S3.cs" />
+    <Compile Include="Applications\ArvnAppL9S4.cs" />
+    <Compile Include="Applications\ArvnAppL9S5.cs" />
     <Compile Include="Core\Application\IArvnApplication.cs" />
     <Compile Include="Core\ArvnCore.cs" />
     <Compile Include="Core\ArvnTime.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Legacy\ArvnVec2i.cs" />
     <Compile Include="Legacy\ArvnVec3f.cs" />
     <Compile Include="Legacy\Renderer.cs" />
+    <Compile Include="Shaders\ArvnShaderL9S5.cs" />
     <Compile Include="TinyRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Core\Render\ArvnRender.cs" />

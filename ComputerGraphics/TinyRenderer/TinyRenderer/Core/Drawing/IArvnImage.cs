@@ -24,5 +24,7 @@ namespace TinyRenderer.Core.Drawing
         object GetImage();
         void SyncFromBuf();
 
+        void Clear(int clearColor);
+
     }
 }

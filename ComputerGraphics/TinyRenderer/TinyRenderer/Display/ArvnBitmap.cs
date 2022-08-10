@@ -33,6 +33,16 @@ namespace TinyRenderer.Display
             SetWidth(image.Width);
             SetHeight(image.Height);
         }
+        public void Clear(int clearColor)
+        {
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    Set(i, j, clearColor);
+                }
+            }
+        }
         public int Get(int x, int y)
         {
             //return imageBuffer[];

@@ -101,6 +101,16 @@ namespace TinyRenderer.Display
             b = ib / 255f;
             return new float[] { r, g, b };
         }
+        public void Clear(int clearColor)
+        {
+            for(int i = 0; i < width; i++)
+            {
+                for(int j = 0; j < height; j++)
+                {
+                    Set(i, j, clearColor);
+                }
+            }
+        }
 
         public object GetImage()
         {
