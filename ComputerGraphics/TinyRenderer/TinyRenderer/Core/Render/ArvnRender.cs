@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using TinyRenderer.Core;
 using TinyRenderer.Core.Drawing;
 using TinyRenderer.Legacy;
@@ -11,6 +12,7 @@ namespace TinyRenderer.Core.Render
     class ArvnRender
     {
         public bool standardZCoordLimit = false;
+        public int parallelShaders = 0;
         static public ArvnRender Create()
         {
             return new ArvnRender();
@@ -77,59 +79,97 @@ namespace TinyRenderer.Core.Render
                 TriangleFragProcess3D(v[0], v[1], v[2], ref shader, ref target, ref zbuf);
             }
         }
-        protected void TriangleFragProcess3D(float[] t0, float[] t1, float[] t2, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
+        protected void TriangleFragProcess3D(float[] ts0, float[] ts1, float[] ts2, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
-            TriangleFragProcess3D(ArvnVec3f.Create(t0[0], t0[1], t0[2]), ArvnVec3f.Create(t1[0], t1[1], t1[2]), ArvnVec3f.Create(t2[0], t2[1], t2[2]), ref shader, ref target, ref zbuf);
-        }
-        protected void TriangleFragProcess3D(ArvnVec3f t0, ArvnVec3f t1, ArvnVec3f t2, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
-        {
-            ArvnVec2f bboxMax = ArvnVec2f.Create(0, 0);
-            ArvnVec2f bboxMin = ArvnVec2f.Create(target.GetWidth(), target.GetHeight());
-            bboxMax.x = Math.Max(bboxMax.x, t0.x);
-            bboxMax.x = Math.Max(bboxMax.x, t1.x);
-            bboxMax.x = Math.Max(bboxMax.x, t2.x);
-            bboxMax.x = Math.Min(bboxMax.x, target.GetWidth() - 1);
-
-            bboxMax.y = Math.Max(bboxMax.y, t0.y);
-            bboxMax.y = Math.Max(bboxMax.y, t1.y);
-            bboxMax.y = Math.Max(bboxMax.y, t2.y);
-            bboxMax.y = Math.Min(bboxMax.y, target.GetHeight() - 1);
-
-            bboxMin.x = Math.Min(bboxMin.x, t0.x);
-            bboxMin.x = Math.Min(bboxMin.x, t1.x);
-            bboxMin.x = Math.Min(bboxMin.x, t2.x);
-            bboxMin.x = Math.Max(bboxMin.x, 0);
-
-            bboxMin.y = Math.Min(bboxMin.y, t0.y);
-            bboxMin.y = Math.Min(bboxMin.y, t1.y);
-            bboxMin.y = Math.Min(bboxMin.y, t2.y);
-            bboxMin.y = Math.Max(bboxMin.y, 0);
-
-            for (int i = (int)bboxMin.x; i <= (int)bboxMax.x; i++)
+            unsafe
             {
-                for (int j = (int)bboxMin.y; j <= (int)bboxMax.y; j++)
+                fixed(float* t0 = ts0, t1 = ts1, t2 = ts2)
                 {
-                    float ta, tb, tc;
-                    ArvnCore.ToBarycentric(i, j, t0.x, t0.y, t1.x, t1.y, t2.x, t2.y, out ta, out tb, out tc);
-                    if (ta >= 0 && tb >= 0 & tc >= 0)
-                    {
-                        float zv = (float)(ta * t0.z + tb * t1.z + tc * t2.z);
-                        if (standardZCoordLimit && (zv < -1 || zv > 1))
-                        {
-                            continue;
-                        }
-                        if (zbuf.Get(i, j) < zv)
-                        {
-                            shader.FragmentShader(new float[] { ta, tb, tc });
-                            float[] color = (float[])shader.GetInternalVariable(0);
-                            int hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
-                            target.Set(i, j, hexColor);
-                            zbuf.Set(i, j, zv);
-                        }
+                    float maxZ = Math.Max(t0[2], t1[2]);
+                    maxZ = Math.Max(maxZ, t2[2]);
 
+                    float bboxMaxx = 0, bboxMaxy = 0;
+                    float bboxMinx = 1e20f, bboxMiny = 1e20f;
+
+                    bboxMaxx = Math.Max(bboxMaxx, t0[0]);
+                    bboxMaxx = Math.Max(bboxMaxx, t1[0]);
+                    bboxMaxx = Math.Max(bboxMaxx, t2[0]);
+                    bboxMaxx = Math.Min(bboxMaxx, target.GetWidth() - 1);
+
+                    bboxMaxy = Math.Max(bboxMaxy, t0[1]);
+                    bboxMaxy = Math.Max(bboxMaxy, t1[1]);
+                    bboxMaxy = Math.Max(bboxMaxy, t2[1]);
+                    bboxMaxy = Math.Min(bboxMaxy, target.GetHeight() - 1);
+
+                    bboxMinx = Math.Min(bboxMinx, t0[0]);
+                    bboxMinx = Math.Min(bboxMinx, t1[0]);
+                    bboxMinx = Math.Min(bboxMinx, t2[0]);
+                    bboxMinx = Math.Max(bboxMinx, 0);
+
+                    bboxMiny = Math.Min(bboxMiny, t0[1]);
+                    bboxMiny = Math.Min(bboxMiny, t1[1]);
+                    bboxMiny = Math.Min(bboxMiny, t2[1]);
+                    bboxMiny = Math.Max(bboxMiny, 0);
+
+                    int xm = (int)bboxMaxx;
+                    int ym = (int)bboxMaxy;
+                    int ys = (int)bboxMiny;
+                    float ta, tb, tc, tw, x0, y0, z0, x1, y1, z1, zbufVal, zv;
+                    float[] color;
+                    int hexColor;
+                    for (int i = (int)bboxMinx; i <= xm; i++)
+                    {
+                        for (int j = ys; j <= ym; j++)
+                        {
+                            //Pre Z Check
+                            zbufVal = zbuf.Get(i, j);
+                            if (zbufVal > maxZ)
+                            {
+                                continue;
+                            }
+
+                            //BaryCenter
+                            x0 = t1[0] - t0[0];
+                            y0 = t2[0] - t0[0];
+                            z0 = t0[0] - i;
+                            x1 = t1[1] - t0[1];
+                            y1 = t2[1] - t0[1];
+                            z1 = t0[1] - j;
+                            tw = 1 / (x0 * y1 - y0 * x1);
+                            tb = (y0 * z1 - z0 * y1) * tw;
+                            tc = (z0 * x1 - x0 * z1) * tw;
+                            if (tb < 0 || tc < 0)
+                            {
+                                continue;
+                            }
+                            ta = 1 - tb - tc;
+
+                            //Shading
+                            if (ta >= 0)
+                            {
+                                zv = ta * t0[2] + tb * t1[2] + tc * t2[2];
+                                if (standardZCoordLimit && (zv < -1 || zv > 1))
+                                {
+                                    continue;
+                                }
+                                if (zbufVal < zv)
+                                {
+                                    shader.FragmentShader(new float[] { ta, tb, tc });
+                                    color = (float[])shader.GetInternalVariable(0);
+                                    hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
+                                    target.Set(i, j, hexColor);
+                                    zbuf.Set(i, j, zv);
+                                }
+
+                            }
+                        }
                     }
                 }
+                
             }
+            
         }
+
+        
     }
 }

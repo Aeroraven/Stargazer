@@ -26,6 +26,10 @@ namespace TinyRenderer.Legacy
         protected Dictionary<string, string> attributeTypeList = new Dictionary<string, string>();
 
         private bool uniformChanged = false;
+        public IArvnShaderCaller GetParallelCopy()
+        {
+            return null;
+        }
         public object GetInternalVariable(int varName)
         {
             if (varName == 0)

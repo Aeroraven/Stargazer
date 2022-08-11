@@ -383,18 +383,82 @@ namespace TinyRenderer.Core
             x = x * (1.5f - xhalf * x * x);
             return x;
         }
-        static public void NormalizeSelf(ref float[] vec)
+        static public unsafe float InvSqrtUnsafe(float x)
         {
-            float sq = 0;
-            int s = vec.Length;
-            for (int i = 0; i < s; i++)
+            float xhalf = 0.5f * x;
+            int i = *(int*)&x;
+            i = 0x5f3759df - (i >> 1);
+            x = *(float*)&i;
+            x = x * (1.5f - xhalf * x * x);
+            return x;
+        }
+        static public void NormalizeSelf(ref float[] vect)
+        {
+            unsafe
             {
-                sq += vec[i] * vec[i];
+                fixed(float* vec = vect)
+                {
+                    float sq = 0;
+                    int s = vect.Length;
+                    for (int i = 0; i < s; i++)
+                    {
+                        sq += vec[i] * vec[i];
+                    }
+
+                    float xhalf = 0.5f * sq;
+                    int q = *(int*)&sq;
+                    q = 0x5f3759df - (q >> 1);
+                    sq = *(float*)&q;
+                    sq = sq * (1.5f - xhalf * sq * sq);
+
+                    for (int i = 0; i < s; i++)
+                    {
+                        vec[i] = vec[i] * sq;
+                    }
+                }
             }
-            sq = (float)InvSqrt(sq);
-            for (int i = 0; i < s; i++)
+        }
+        static public void NormalizeSelfWd(ref float[] vect,int dim)
+        {
+            unsafe
             {
-                vec[i] = vec[i] * sq;
+                fixed (float* vec = vect)
+                {
+                    float sq = 0;
+                    for (int i = 0; i < dim; i++)
+                    {
+                        sq += vec[i] * vec[i];
+                    }
+
+                    float xhalf = 0.5f * sq;
+                    int q = *(int*)&sq;
+                    q = 0x5f3759df - (q >> 1);
+                    sq = *(float*)&q;
+                    sq = sq * (1.5f - xhalf * sq * sq);
+
+                    for (int i = 0; i < dim; i++)
+                    {
+                        vec[i] = vec[i] * sq;
+                    }
+                }
+            }
+        }
+        static public void NormalizeSelfWd3(ref float[] vect)
+        {
+            unsafe
+            {
+                fixed (float* vec = vect)
+                {
+                    float sq = vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2];
+                    float xhalf = 0.5f * sq;
+                    int q = *(int*)&sq;
+                    q = 0x5f3759df - (q >> 1);
+                    sq = *(float*)&q;
+                    sq = sq * (1.5f - xhalf * sq * sq);
+                    vec[0] *= sq;
+                    vec[1] *= sq;
+                    vec[2] *= sq;
+                }
             }
         }
         static public float[] CrossProduct(float[] a, float[] b)

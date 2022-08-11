@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using TinyRenderer.Core.Drawing;
+using TinyRenderer.Core.Structure;
 using TinyRenderer.Shaders;
 
 namespace TinyRenderer.Core.Render
@@ -30,7 +31,8 @@ namespace TinyRenderer.Core.Render
 
         //Varyings
         int nVaryings = 0;
-        protected Dictionary<string, int> varyingKeyMap = new Dictionary<string, int>();
+        protected ArvnTrie varyingKeyMap = new ArvnTrie();
+
         protected object[][] varyingList;
         protected int[] varyingTypeList;
         protected object[] interpolatedVaryingList;
@@ -50,6 +52,13 @@ namespace TinyRenderer.Core.Render
 
         //Internal
         protected object[] internalList = new object[2];
+        public IArvnShaderCaller GetParallelCopy()
+        {
+            ArvnShader copy = (ArvnShader)MemberwiseClone();
+            copy.interpolatedVaryingList = new object[interpolatedVaryingList.Length];
+            copy.internalList = new object[internalList.Length];
+            return copy;
+        }
         public object GetInternalVariable(int varName)
         {
             return internalList[varName];
@@ -72,7 +81,11 @@ namespace TinyRenderer.Core.Render
             {
                 varyingList[i] = varyingListPre[i];
                 varyingTypeList[i] = varyingTypeListPre[i];
-                //interpolatedVaryingList[i] = interpolatedVaryingListPre[i];
+                if (varyingTypeList[i] == tpVec3f)
+                {
+                    interpolatedVaryingList[i] = new float[3];
+                }
+                // = interpolatedVaryingListPre[i];
             }
         }
         protected int GetVertexNums()
@@ -134,23 +147,23 @@ namespace TinyRenderer.Core.Render
         }
         protected void DefineVaryingVariable(string varName, int typeName)
         {
-            varyingKeyMap[varName] = nVaryings;
+            varyingKeyMap.Insert(varName, nVaryings);
             varyingListPre[nVaryings] = new object[3];
             varyingTypeListPre[nVaryings] = typeName;
             nVaryings++;
         }
         protected object GetVaryingVariableByVertex(string varName, int idx)
         {
-            return varyingList[varyingKeyMap[varName]][idx];
+            return varyingList[varyingKeyMap.Find(varName)][idx];
         }
         protected object GetVaryingVariable(string varName)
         {
-            return interpolatedVaryingList[varyingKeyMap[varName]];
+            return interpolatedVaryingList[varyingKeyMap.Find(varName)];
         }
         protected void SetVaryingVariable(string varName, object value)
         {
             int idx = activeVIndex;
-            varyingList[varyingKeyMap[varName]][idx] = value;
+            varyingList[varyingKeyMap.Find(varName)][idx] = value;
         }
         protected void DefineVariable(string varName, int typeName, object value)
         {
@@ -177,49 +190,56 @@ namespace TinyRenderer.Core.Render
         }
         private void InterpolateVaryings(int id, float[] bc)
         {
-            int tp = varyingTypeList[id];
-            var tx = varyingList[id];
-            object a = tx[0];
-            object b = tx[1];
-            object c = tx[2];
-            float ta = bc[0];
-            float tb = bc[1];
-            float tc = bc[2];
-            float dx, dy, dz, dw;
-            switch (tp)
+            unsafe
             {
-                case tpInt:
-                    interpolatedVaryingList[id] = ta * (int)a + tb * (int)b + tc * (int)c;
-                    break;
+                int tp = varyingTypeList[id];
+                var tx = varyingList[id];
+                object a = tx[0];
+                object b = tx[1];
+                object c = tx[2];
+                float ta = bc[0];
+                float tb = bc[1];
+                float tc = bc[2];
+                float dx, dy, dz, dw;
+                switch (tp)
+                {
+                    case tpInt:
+                        interpolatedVaryingList[id] = ta * (int)a + tb * (int)b + tc * (int)c;
+                        break;
 
-                case tpFloat:
-                    interpolatedVaryingList[id] = ta * (float)a + tb * (float)b + tc * (float)c;
-                    break;
+                    case tpFloat:
+                        interpolatedVaryingList[id] = ta * (float)a + tb * (float)b + tc * (float)c;
+                        break;
 
-                case tpVec2f:
-                    dx = ta * ((float[])a)[0] + tb * ((float[])b)[0] + tc * ((float[])c)[0];
-                    dy = ta * ((float[])a)[1] + tb * ((float[])b)[1] + tc * ((float[])c)[1];
-                    interpolatedVaryingList[id] = new float[] { dx, dy };
-                    break;
+                    case tpVec2f:
+                        dx = ta * ((float[])a)[0] + tb * ((float[])b)[0] + tc * ((float[])c)[0];
+                        dy = ta * ((float[])a)[1] + tb * ((float[])b)[1] + tc * ((float[])c)[1];
+                        interpolatedVaryingList[id] = new float[] { dx, dy };
+                        break;
 
-                case tpVec3f:
-                    float[] da = (float[])a;
-                    float[] db = (float[])b;
-                    float[] dc = (float[])c;
-                    dx = ta * da[0] + tb * db[0] + tc * dc[0];
-                    dy = ta * da[1] + tb * db[1] + tc * dc[1];
-                    dz = ta * da[2] + tb * db[2] + tc * dc[2];
-                    interpolatedVaryingList[id] = new float[] { dx, dy, dz };
-                    break;
+                    case tpVec3f:
+                        float[] da = (float[])a;
+                        float[] db = (float[])b;
+                        float[] dc = (float[])c;
+                        float[] dst = (float[])interpolatedVaryingList[id];
+                        fixed (float* dap = da,dbp = db, dcp = dc, ddst = dst)
+                        {
+                            dst[0] = ta * dap[0] + tb * dbp[0] + tc * dcp[0];
+                            dst[1] = ta * dap[1] + tb * dbp[1] + tc * dcp[1];
+                            dst[2] = ta * dap[2] + tb * dbp[2] + tc * dcp[2];
+                        }
+                        break;
 
-                case tpVec4f:
-                    dx = ta * ((float[])a)[0] + tb * ((float[])b)[0] + tc * ((float[])c)[0];
-                    dy = ta * ((float[])a)[1] + tb * ((float[])b)[1] + tc * ((float[])c)[1];
-                    dz = ta * ((float[])a)[2] + tb * ((float[])b)[2] + tc * ((float[])c)[2];
-                    dw = ta * ((float[])a)[3] + tb * ((float[])b)[3] + tc * ((float[])c)[3];
-                    interpolatedVaryingList[id] = new float[] { dx, dy, dz, dw };
-                    break;
-            } 
+                    case tpVec4f:
+                        dx = ta * ((float[])a)[0] + tb * ((float[])b)[0] + tc * ((float[])c)[0];
+                        dy = ta * ((float[])a)[1] + tb * ((float[])b)[1] + tc * ((float[])c)[1];
+                        dz = ta * ((float[])a)[2] + tb * ((float[])b)[2] + tc * ((float[])c)[2];
+                        dw = ta * ((float[])a)[3] + tb * ((float[])b)[3] + tc * ((float[])c)[3];
+                        interpolatedVaryingList[id] = new float[] { dx, dy, dz, dw };
+                        break;
+                }
+            }
+            
         }
         private bool CheckVariable(int typeName, object value)
         {

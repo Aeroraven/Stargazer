@@ -16,12 +16,18 @@ namespace TinyRenderer.Display
         protected int width;
         Bitmap image;
         protected byte[] imageBuffer;
+
+        //Clear buffer
+        int lastClearColor = 0;
+        protected byte[] clearImageBuffer;
+
         public ArvnBufferedBitmap(int w, int h)
         {
             SetWidth(w);
             SetHeight(h);
             image = new Bitmap(w, h);
             imageBuffer = new byte[w * h * 4];
+            clearImageBuffer = new byte[w * h * 4];
         }
         public void GetInNormalized(float x, float y, out float r, out float g, out float b)
         {
@@ -47,6 +53,7 @@ namespace TinyRenderer.Display
             var p = Graphics.FromImage(image);
             p.DrawImage(imagew, Point.Empty);
             imageBuffer = new byte[image.Width * image.Height * 4];
+            clearImageBuffer = new byte[image.Width * image.Height * 4];
             SyncFromImage();
         }
         public int Get(int x, int y)
@@ -65,12 +72,12 @@ namespace TinyRenderer.Display
         }
         public int GetHeight()
         {
-            return image.Height;
+            return height;
         }
 
         public int GetWidth()
         {
-            return image.Width;
+            return width;
         }
 
         public void Set(int x, int y, int hexColor)
@@ -114,13 +121,18 @@ namespace TinyRenderer.Display
         }
         public void Clear(int clearColor)
         {
-            for (int i = 0; i < imageBuffer.Length; i += 4)
+            if (clearColor != lastClearColor)
             {
-                imageBuffer[i + 3] = (byte)(clearColor >> (8 * 3));
-                imageBuffer[i + 2] = (byte)((clearColor >> (8 * 2)) & 0xff);
-                imageBuffer[i + 1] = (byte)((clearColor >> (8 * 1)) & 0xff);
-                imageBuffer[i] = (byte)((clearColor >> (8 * 0)) & 0xff);
+                lastClearColor = clearColor;
+                for (int i = 0; i < clearImageBuffer.Length; i += 4)
+                {
+                    clearImageBuffer[i + 3] = (byte)(clearColor >> (8 * 3));
+                    clearImageBuffer[i + 2] = (byte)((clearColor >> (8 * 2)) & 0xff);
+                    clearImageBuffer[i + 1] = (byte)((clearColor >> (8 * 1)) & 0xff);
+                    clearImageBuffer[i] = (byte)((clearColor >> (8 * 0)) & 0xff);
+                }
             }
+            Buffer.BlockCopy(clearImageBuffer, 0, imageBuffer, 0, clearImageBuffer.Length);
             var bits = image.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.WriteOnly, image.PixelFormat);
             Marshal.Copy(imageBuffer, 0, bits.Scan0, imageBuffer.Length);
             image.UnlockBits(bits);

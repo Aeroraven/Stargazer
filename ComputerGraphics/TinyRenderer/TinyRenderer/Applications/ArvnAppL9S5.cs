@@ -84,10 +84,6 @@ namespace TinyRenderer.Applications
 
                 lastFrameTimestamp = frameTimestamp;
                 frameTimestamp = ArvnTime.GetMiliSecond();
-                if(frameTimestamp< lastFrameTimestamp)
-                {
-                    throw new Exception("AAA");
-                }
                 fps = 1000.0f / (frameTimestamp - lastFrameTimestamp);
 
                 //Render
@@ -103,16 +99,17 @@ namespace TinyRenderer.Applications
                 Application.DoEvents();
                 if (ArvnTime.GetMiliSecond() - frameTimestamp < minLoopTime)
                 {
-                   // Thread.Sleep(minLoopTime - (ArvnTime.GetMiliSecond() - frameTimestamp));
+                   //Thread.Sleep(minLoopTime - (ArvnTime.GetMiliSecond() - frameTimestamp));
                 }
             }
 
         }
         public void Display()
         {
-            using (var g = form.CreateGraphics())
+            using (Graphics g = form.CreateGraphics())
             {
-                g.DrawImage((Bitmap)drawBuffer.GetDisplayBuffer().GetImage(), Point.Empty);
+                Bitmap t = (Bitmap)drawBuffer.GetDisplayBuffer().GetImage();
+                g.DrawImage(t, Point.Empty);
             }
         }
 

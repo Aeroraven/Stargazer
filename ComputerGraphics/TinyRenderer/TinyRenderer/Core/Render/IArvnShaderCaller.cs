@@ -9,7 +9,7 @@ namespace TinyRenderer.Core.Render
         void VertexShader(int index, int vindex, params object[] input);
         object GetInternalVariable(int varName);
         void FragmentShader(float[] barycenterCoord, params object[] input);
-
         void BeforeRunning();
+        IArvnShaderCaller GetParallelCopy();
     }
 }

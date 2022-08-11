@@ -57,6 +57,8 @@
     <Compile Include="Core\ArvnCore.cs" />
     <Compile Include="Core\ArvnTime.cs" />
     <Compile Include="Core\Drawing\ArvnDoubleBuffer.cs" />
+    <Compile Include="Core\Structure\ArvnTrie.cs" />
+    <Compile Include="Core\Structure\ArvnUnmanaged.cs" />
     <Compile Include="Display\ArvnBitmap.cs" />
     <Compile Include="Display\ArvnBufferedBitmap.cs" />
     <Compile Include="Core\Drawing\IArvnImage.cs" />

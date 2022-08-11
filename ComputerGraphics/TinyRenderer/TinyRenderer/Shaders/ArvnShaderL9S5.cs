@@ -37,7 +37,7 @@ namespace TinyRenderer.Shaders
 
                 lightT = new float[3];
                 ArvnCore.HomogeneousLinearTransform3D(modelview, light[0], light[1], light[2], 0, out lightT[0], out lightT[1], out lightT[2], out _);
-                ArvnCore.NormalizeSelf(ref lightT);
+                ArvnCore.NormalizeSelfWd3(ref lightT);
                 model_it = ArvnCore.InverseTransposedMatrix(modelview);
                 trans = ArvnCore.MatrixMultiply(viewport, projection, modelview);
                 SetUniformChangedState();
@@ -47,7 +47,7 @@ namespace TinyRenderer.Shaders
         public override void FragmentShader()
         {
             float[] vNormal = (float[])GetVaryingVariable("v_normal");
-            ArvnCore.NormalizeSelf(ref vNormal);
+            ArvnCore.NormalizeSelfWd3(ref vNormal);
             float diff = ArvnCore.DotProduct(vNormal, lightT);
             if (diff < 0)
             {
