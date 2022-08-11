@@ -16,15 +16,15 @@ namespace TinyRenderer.Shaders
 
         public ArvnShaderL9S5() : base()
         {
-            DefineVariable("viewport", "mat4f", new float[4, 4]);
-            DefineVariable("projection", "mat4f", new float[4, 4]);
-            DefineVariable("modelview", "mat4f", new float[4, 4]);
-            DefineVariable("light", "vec3f", new float[3]);
+            DefineVariable("viewport", tpMat4f, new float[4, 4]);
+            DefineVariable("projection", tpMat4f, new float[4, 4]);
+            DefineVariable("modelview", tpMat4f, new float[4, 4]);
+            DefineVariable("light", tpVec3f, new float[3]);
 
-            DefineVaryingVariable("v_normal", "vec3f");
+            DefineVaryingVariable("v_normal", tpVec3f);
 
-            DefineAttributeVariable("a_normal", "vec3f");
-            DefineAttributeVariable("a_vert", "vec3f");
+            DefineAttributeVariable("a_normal", tpVec3f);
+            DefineAttributeVariable("a_vert", tpVec3f);
         }
         public override void ComputeDerivedVariables()
         {
@@ -53,7 +53,7 @@ namespace TinyRenderer.Shaders
             {
                 diff = 0;
             }
-            SetVariable(arFragColor, Vec4f(diff, diff, diff, diff));
+            SetInternalVariable(arFragColor, Vec4f(diff, diff, diff, diff));
         }
 
         public override void VertexShader()
@@ -68,7 +68,7 @@ namespace TinyRenderer.Shaders
             ArvnCore.HomogeneousLinearTransform3DToCartesian(model_it, aNormal[0], aNormal[1], aNormal[2], 0, out aNormalT[0], out aNormalT[1], out aNormalT[2]);
 
             SetVaryingVariable("v_normal", aNormalT);
-            SetVariable(arPosition, aVertT);
+            SetInternalVariable(arPosition, aVertT);
         }
     }
 }

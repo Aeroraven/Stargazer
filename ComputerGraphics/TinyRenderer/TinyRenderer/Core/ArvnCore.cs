@@ -43,10 +43,10 @@ namespace TinyRenderer.Core
         }
         static public void ToBarycentric(float xs, float ys, float x0, float y0, float x1, float y1, float x2, float y2, out float a, out float b, out float c)
         {
-            float u, v, w;
-            CrossProduct(x1 - x0, x2 - x0, x0 - xs, y1 - y0, y2 - y0, y0 - ys, out u, out v, out w);
-            b = u / (float)w;
-            c = v / (float)w;
+            float w;
+            CrossProduct(x1 - x0, x2 - x0, x0 - xs, y1 - y0, y2 - y0, y0 - ys, out b, out c, out w);
+            b /= w;
+            c /= w;
             a = 1 - b - c;
         }
         static public void GetTriangleNormal(ArvnVec3f ta, ArvnVec3f tb, ArvnVec3f tc, out float dx, out float dy, out float dz)
@@ -131,10 +131,6 @@ namespace TinyRenderer.Core
             oy = t[1, 0] * x + t[1, 1] * y + t[1, 2] * z + t[1, 3] * w;
             oz = t[2, 0] * x + t[2, 1] * y + t[2, 2] * z + t[2, 3] * w;
             float ow = t[3, 0] * x + t[3, 1] * y + t[3, 2] * z + t[3, 3] * w;
-            if (Math.Abs(ow) < float.Epsilon)
-            {
-                throw new ArvnCoreException("Divide by zero");
-            }
             ox /= ow;
             oy /= ow;
             oz /= ow;
@@ -144,11 +140,6 @@ namespace TinyRenderer.Core
         {
             int ar = a.GetLength(0);
             int ac = a.GetLength(1);
-            int br = b.GetLength(0);
-            if (ac != br)
-            {
-                throw new ArvnCoreException("Invalid matrice pair");
-            }
             int bc = b.GetLength(1);
             c = new float[ar, bc];
             for (int i = 0; i < ar; i++)
@@ -174,10 +165,6 @@ namespace TinyRenderer.Core
 
         static public float[,] MatrixMultiply(params float[][,] m)
         {
-            if (m.Length == 0)
-            {
-                throw new ArvnCoreException("No matrix is given");
-            }
             float[,] v = m[0];
             for (int i = 1; i < m.Length; i++)
             {
@@ -716,10 +703,11 @@ namespace TinyRenderer.Core
         static public float[,] InverseTransposedMatrix(float[,] x)
         {
             int rows = x.GetLength(0);
-            float[,] mat = new float[rows, 2 * rows];
+            int rows2 = rows << 1;
+            float[,] mat = new float[rows, rows2];
             for (int i = 0; i < rows; i++)
             {
-                for (int j = 0; j < rows * 2; j++)
+                for (int j = 0; j < rows2; j++)
                 {
                     if (j < rows)
                     {
@@ -727,7 +715,7 @@ namespace TinyRenderer.Core
                     }
                     else
                     {
-                        mat[i, j] = (j == i + x.GetLength(1)) ? 1 : 0;
+                        mat[i, j] = (j == i + rows) ? 1 : 0;
                     }
                 }
             }
@@ -740,7 +728,7 @@ namespace TinyRenderer.Core
                     {
                         if (mat[j, i] != 0)
                         {
-                            for (int k = i; k < rows * 2; k++)
+                            for (int k = i; k < rows2; k++)
                             {
                                 mat[i, k] += mat[j, k];
                             }
@@ -748,15 +736,15 @@ namespace TinyRenderer.Core
                         }
                     }
                 }
-                float s = mat[i, i];
-                for (int j = 0; j < rows * 2; j++)
+                float s = 1 / mat[i, i];
+                for (int j = 0; j < rows2; j++)
                 {
-                    mat[i, j] /= s;
+                    mat[i, j] *= s;
                 }
                 for (int j = i + 1; j < rows; j++)
                 {
                     float coef = -mat[j, i];
-                    for (int k = i; k < rows * 2; k++)
+                    for (int k = i; k < rows2; k++)
                     {
                         mat[j, k] += coef * mat[i, k];
                     }
@@ -767,8 +755,8 @@ namespace TinyRenderer.Core
             {
                 for (int j = i - 1; j >= 0; j--)
                 {
-                    float e = -1 * (mat[j, i] / mat[i, i]);
-                    for (int r = i; r < 2 * rows; r++)
+                    float e = -mat[j, i] ;
+                    for (int r = i; r < rows2; r++)
                     {
                         mat[j, r] += e * mat[i, r];
                     }
@@ -778,7 +766,7 @@ namespace TinyRenderer.Core
             float[,] result = new float[rows, rows];
             for (int i = 0; i < rows; i++)
             {
-                for (int r = rows; r < 2 * rows; r++)
+                for (int r = rows; r < rows2; r++)
                 {
                     result[r - rows, i] = mat[i, r];
                 }

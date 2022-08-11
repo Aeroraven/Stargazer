@@ -18,18 +18,18 @@ namespace TinyRenderer.Shaders
         public ArvnPlainTexturedShader() : base()
         {
             //Uniforms
-            DefineVariable("modelview", "mat4f", new float[4, 4]);
-            DefineVariable("projection", "mat4f", new float[4, 4]);
-            DefineVariable("viewport", "mat4f", new float[4, 4]);
-            DefineVariable("diffuse_texture", "sampler2d", new ArvnBufferedBitmap(1, 1));
+            DefineVariable("modelview", tpMat4f, new float[4, 4]);
+            DefineVariable("projection", tpMat4f, new float[4, 4]);
+            DefineVariable("viewport", tpMat4f, new float[4, 4]);
+            DefineVariable("diffuse_texture", tpSampler2d, new ArvnBufferedBitmap(1, 1));
 
             //Varyings
-            DefineVaryingVariable("v_uv", "vec2f");
+            DefineVaryingVariable("v_uv", tpVec2f);
 
 
             //Attributes
-            DefineAttributeVariable("vertices", "vec3f");
-            DefineAttributeVariable("vtexture", "vec2f");
+            DefineAttributeVariable("vertices", tpVec3f);
+            DefineAttributeVariable("vtexture", tpVec2f);
         }
         public override void ComputeDerivedVariables()
         {
@@ -49,7 +49,7 @@ namespace TinyRenderer.Shaders
             ComputeDerivedVariables();
             float[] vUv = (float[])GetVaryingVariable("v_uv");
             float[] c = diffuseTexture.GetInNormalizedEx(vUv[0], vUv[1]);
-            SetVariable(arFragColor, new float[] { c[0], c[1], c[2], 1 });
+            SetInternalVariable(arFragColor, new float[] { c[0], c[1], c[2], 1 });
         }
 
         public override void VertexShader()
@@ -60,7 +60,7 @@ namespace TinyRenderer.Shaders
             ArvnCore.HomogeneousLinearTransform3DToCartesian(pm, v[0], v[1], v[2], 1, out vx[0], out vx[1], out vx[2]);
             float[] vt = (float[])GetAttributeVariable("vtexture");
             SetVaryingVariable("v_uv", new float[] { vt[0], vt[1] });
-            SetVariable(arPosition, vx);
+            SetInternalVariable(arPosition, vx);
 
         }
     }

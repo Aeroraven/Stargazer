@@ -20,14 +20,14 @@ namespace TinyRenderer.Shaders
         public ArvnSSAORenderShader() : base()
         {
             //Uniforms
-            DefineVariable("viewport", "mat4f", new float[4,4]);
-            DefineVariable("depth_map", "sampler2d", new ArvnBufferedBitmap(1, 1));
+            DefineVariable("viewport", tpMat4f, new float[4,4]);
+            DefineVariable("depth_map", tpSampler2d, new ArvnBufferedBitmap(1, 1));
 
             //Varyings
-            DefineVaryingVariable("v_uv", "vec2f");
+            DefineVaryingVariable("v_uv", tpVec2f);
 
             //Attributes
-            DefineAttributeVariable("vertex", "vec3f");
+            DefineAttributeVariable("vertex", tpVec3f);
         }
         public override void ComputeDerivedVariables()
         {
@@ -50,7 +50,7 @@ namespace TinyRenderer.Shaders
 
             if (bufDepth <= 0.01f)
             {
-                SetVariable(arFragColor, Vec4f(0, 0, 0, 0));
+                SetInternalVariable(arFragColor, Vec4f(0, 0, 0, 0));
                 return;
             }
             //Generate random samples in the unit sphere
@@ -83,12 +83,12 @@ namespace TinyRenderer.Shaders
             if (skips == trials)
             {
                 float c = 1.0f - (1.0f *  occls / trials);
-                SetVariable(arFragColor, Vec4f(1, 0, 0, 0));
+                SetInternalVariable(arFragColor, Vec4f(1, 0, 0, 0));
             }
             else
             {
                 float c = 1.0f - (1.0f * occls / (trials-skips));
-                SetVariable(arFragColor, Vec4f(c, c, c, c));
+                SetInternalVariable(arFragColor, Vec4f(c, c, c, c));
             }
             
         }
@@ -98,7 +98,7 @@ namespace TinyRenderer.Shaders
             float[] v = (float[])GetAttributeVariable("vertex");
             float[] vt = new float[4];
             ArvnCore.HomogeneousLinearTransform3DToCartesian(viewport, v[0], v[1], v[2], 1, out vt[0], out vt[1], out vt[2]);
-            SetVariable(arPosition, vt);
+            SetInternalVariable(arPosition, vt);
             SetVaryingVariable("v_uv", new float[] { v[0], v[1] });
         }
     }

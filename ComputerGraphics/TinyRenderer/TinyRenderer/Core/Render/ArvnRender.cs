@@ -65,13 +65,14 @@ namespace TinyRenderer.Core.Render
         }
         public void RasterizeTriangles3D(int[] faceIndex, ref IArvnShaderCaller shader, ref IArvnImage target, ref ArvnZBuffer zbuf)
         {
+            shader.BeforeRunning();
             for (int i = 0; i < faceIndex.Length; i += 3)
             {
                 float[][] v = new float[3][];
                 for (int j = 0; j < 3; j++)
                 {
                     shader.VertexShader(faceIndex[i + j], j);
-                    v[j] = (float[])shader.GetVariable("arPosition");
+                    v[j] = (float[])shader.GetInternalVariable(1);
                 }
                 TriangleFragProcess3D(v[0], v[1], v[2], ref shader, ref target, ref zbuf);
             }
@@ -120,7 +121,7 @@ namespace TinyRenderer.Core.Render
                         if (zbuf.Get(i, j) < zv)
                         {
                             shader.FragmentShader(new float[] { ta, tb, tc });
-                            float[] color = (float[])shader.GetVariable("arFragColor");
+                            float[] color = (float[])shader.GetInternalVariable(0);
                             int hexColor = ArvnCore.RGBToHex((int)(color[0] * 255), (int)(color[1] * 255), (int)(color[2] * 255));
                             target.Set(i, j, hexColor);
                             zbuf.Set(i, j, zv);

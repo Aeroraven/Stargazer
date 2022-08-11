@@ -26,6 +26,22 @@ namespace TinyRenderer.Legacy
         protected Dictionary<string, string> attributeTypeList = new Dictionary<string, string>();
 
         private bool uniformChanged = false;
+        public object GetInternalVariable(int varName)
+        {
+            if (varName == 0)
+            {
+                return varList["arFragColor"];
+            }
+            if (varName == 1)
+            {
+                return varList["arPosition"];
+            }
+            return null;
+        }
+        public void BeforeRunning()
+        {
+
+        }
         protected int GetVertexNums()
         {
             int f = -1;

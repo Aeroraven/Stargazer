@@ -20,6 +20,7 @@ namespace TinyRenderer.Applications
     {
         Form form;
         ArvnDoubleBuffer drawBuffer;
+        Font fpsfont;
         ArvnRender renderer;
         double lastFrameTimestamp = 0;
         double frameTimestamp = 0;
@@ -34,6 +35,7 @@ namespace TinyRenderer.Applications
             drawBuffer.SetBuffer(buf1, buf2);
 
             //Window
+            fpsfont = new Font(new FontFamily("Arial"), 14);
             form = new Form
             {
                 Size = new Size(800, 600),
@@ -118,7 +120,7 @@ namespace TinyRenderer.Applications
         {
             using (var g = Graphics.FromImage((Bitmap)drawBuffer.GetDrawingBuffer().GetImage()))
             {
-                g.DrawString("FPS: " + ((int)(fps * 100)) / 100.0, new Font(new FontFamily("Arial"), 14), Brushes.White, 0, 0);
+                g.DrawString("FPS: " + ((int)(fps * 100)) / 100.0, fpsfont, Brushes.White, 0, 0);
             }
             drawBuffer.GetDrawingBuffer().SyncFromImage();
         }
