@@ -29,6 +29,15 @@ namespace TinyRenderer.Display
             imageBuffer = new byte[w * h * 4];
             clearImageBuffer = new byte[w * h * 4];
         }
+        public void Get(int x, int y, out float r, out float g, out float b)
+        {
+            int hex = Get(x, y);
+            int ir, ig, ib;
+            ArvnCore.HexToRGB(hex, out ir, out ig, out ib);
+            r = ir / 255f;
+            g = ig / 255f;
+            b = ib / 255f;
+        }
         public void GetInNormalized(float x, float y, out float r, out float g, out float b)
         {
             int hex = GetInNormalized(x, y);

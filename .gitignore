@@ -17,3 +17,6 @@ MachineLearning/MNISTGAN/mnist_data/MNIST/raw/train-labels-idx1-ubyte
 *.bmp
 *.jpg
 *.tga
+ComputerGraphics/Iris/.vs/Iris/v16/.suo
+*.db
+*.ipch

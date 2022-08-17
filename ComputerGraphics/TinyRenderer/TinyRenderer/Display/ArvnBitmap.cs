@@ -35,6 +35,15 @@ namespace TinyRenderer.Display
             g = ig / 255f;
             b = ib / 255f;
         }
+        public void Get(int x, int y, out float r, out float g, out float b)
+        {
+            int hex = Get(x, y);
+            int ir, ig, ib;
+            ArvnCore.HexToRGB(hex, out ir, out ig, out ib);
+            r = ir / 255f;
+            g = ig / 255f;
+            b = ib / 255f;
+        }
         public void Load(string path)
         {
             image = new Bitmap(path);
@@ -56,7 +65,6 @@ namespace TinyRenderer.Display
         }
         public int Get(int x, int y)
         {
-            //return imageBuffer[];
             return image.GetPixel(x, height - 1 - y).ToArgb();
         }
         public int GetInNormalized(float x, float y)

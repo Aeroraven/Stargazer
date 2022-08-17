@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Applications\ArvnAppL10S1.cs" />
     <Compile Include="Applications\ArvnAppL9S1.cs" />
     <Compile Include="Applications\ArvnAppL9S2.cs" />
     <Compile Include="Applications\ArvnAppL9S3.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="Legacy\ArvnVec2i.cs" />
     <Compile Include="Legacy\ArvnVec3f.cs" />
     <Compile Include="Legacy\Renderer.cs" />
+    <Compile Include="Shaders\ArvnGaussianShaderL10S1.cs" />
     <Compile Include="Shaders\ArvnShaderL9S5.cs" />
     <Compile Include="TinyRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

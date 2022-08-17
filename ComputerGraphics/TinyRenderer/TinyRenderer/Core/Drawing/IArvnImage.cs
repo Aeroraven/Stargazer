@@ -9,7 +9,7 @@ namespace TinyRenderer.Core.Drawing
 
         void Set(int x, int y, int hexColor);
         int Get(int x, int y);
-
+        void Get(int x, int y, out float r, out float g, out float b);
         int GetInNormalized(float x, float y);
 
         void GetInNormalized(float x, float y, out float r, out float g, out float b);

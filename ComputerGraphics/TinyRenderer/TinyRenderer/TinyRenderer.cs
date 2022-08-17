@@ -863,17 +863,24 @@ namespace TinyRenderer
 
         public static void Lesson9S6()
         {
-            //Lesson 9 Section 6: Accelerate clear call
+            //Lesson 9 Section 6: Acceleration & Optimization
 
-            //Reduces Clear CPU from 54% To 0.6%
-            //FPS: about 2~
-
+            //FPS: 2 -> 15
             IArvnApplication app = new ArvnAppL9S5();
             app.Run();
         }
+
+        public static void Lesson10S1()
+        {
+            //Lesson 10 Section 1: Postprocessing & Gaussian Blur
+
+            IArvnApplication app = new ArvnAppL10S1();
+            app.Run();
+        }
+
         static void Main(string[] args)
         {
-            Lesson9S5();
+            Lesson9S6();
         }
     }
 }
