@@ -1,7 +1,6 @@
 import axios from "../node_modules/axios/index";
 import { mat4,mat3 } from "../node_modules/gl-matrix-ts/dist/index";
 import {AriaCamera} from "./aria-camera"
-import { AriaFramebuffer } from "./aria-framebuffer";
 import { AriaLoadedMesh } from "./aria-loaded-mesh";
 
 interface AriaShaderProgramStructure{
@@ -45,18 +44,6 @@ interface AriaOutlineShaderProgramStructure{
     }
 }
 
-interface AriaPostShaderProgramStructure{
-    program:WebGLProgram,
-    attribLoc:{
-        aVert:number,
-        aTex:number
-    },
-    uniformLoc:{
-        projMat:WebGLUniformLocation,
-        texSampler:WebGLUniformLocation
-    }
-}
-
 interface AriaPosBufferStructure{
     nums:number
     pos:WebGLBuffer,
@@ -64,12 +51,6 @@ interface AriaPosBufferStructure{
     tex:WebGLBuffer,
     norm:WebGLBuffer
     ele:WebGLBuffer,
-}
-
-interface AriaRectBufferStructure{
-    pos:WebGLBuffer,
-    ele:WebGLBuffer,
-    tex:WebGLBuffer
 }
 
 interface AriaLightPosBufferStructure{
@@ -80,7 +61,6 @@ interface AriaLightPosBufferStructure{
 interface AriaTextureStructure{
     tex1:WebGLTexture,
     tex2:WebGLTexture,
-    tex3:WebGLTexture
 }
 
 function loadShader(gl:WebGL2RenderingContext,type:number,source:string):WebGLShader|null{
@@ -119,37 +99,6 @@ async function loadFile(path:string):Promise<string>{
     const resp = await axios.get(path);
     return <string>resp.data;
 }
-
-function initRectangleBuffer(gl:WebGL2RenderingContext):AriaRectBufferStructure{
-    const posBuffer = <WebGLBuffer>gl.createBuffer();
-    let vertices = [
-        -1.0, -1.0,  -1.0,
-         1.0, -1.0,  -1.0,
-         1.0,  1.0,  -1.0,
-        -1.0,  1.0,  -1.0,
-    ];
-    gl.bindBuffer(gl.ARRAY_BUFFER,posBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(vertices),gl.STATIC_DRAW)
-
-    const texBuffer = <WebGLBuffer>gl.createBuffer();
-    let texLst = [0.0,0.0,1.0,0.0,1.0,1.0,0.0,1.0]
-    gl.bindBuffer(gl.ARRAY_BUFFER,texBuffer)
-    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(texLst),gl.STATIC_DRAW)
-
-    const eleBuffer = <WebGLBuffer>gl.createBuffer()
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,eleBuffer)
-    const eleIndices = [
-        0,  1,  2,      0,  2,  3,   
-    ];
-    
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(eleIndices),gl.STATIC_DRAW)
-    return <AriaRectBufferStructure>{
-        pos:posBuffer,
-        tex:texBuffer,
-        ele:eleBuffer
-    }
-}
-
 
 function initLightSrcBuffer(gl:WebGL2RenderingContext):AriaLightPosBufferStructure{
     const posBuffer = <WebGLBuffer>gl.createBuffer();
@@ -384,36 +333,6 @@ function drawLight(gl:WebGL2RenderingContext,progInfo:AriaLightShaderProgramStru
 }
 
 
-function drawRect(gl:WebGL2RenderingContext,progInfo:AriaPostShaderProgramStructure,
-    buffer:AriaRectBufferStructure,tx:AriaTextureStructure,camera:AriaCamera){
-    
-    //Projection 
-    const projectionMatrix = camera.getViewportOrtho()
-
-    //Attrib
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.pos);
-    gl.vertexAttribPointer(progInfo.attribLoc.aVert,3,gl.FLOAT,false,0,0)
-    gl.enableVertexAttribArray(progInfo.attribLoc.aVert)
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer.tex);
-    gl.vertexAttribPointer(progInfo.attribLoc.aTex,2,gl.FLOAT,false,0,0)
-    gl.enableVertexAttribArray(progInfo.attribLoc.aTex)
-
-    //Use Shader
-    gl.useProgram(progInfo.program)
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer.ele)
-    gl.activeTexture(gl.TEXTURE0)
-    gl.bindTexture(gl.TEXTURE_2D, tx.tex3)
-    gl.uniform1i(progInfo.uniformLoc.texSampler,0);
-
-
-    //Uniforms
-    gl.uniformMatrix4fv(progInfo.uniformLoc.projMat,false,projectionMatrix)
-
-    gl.drawElements(gl.TRIANGLES,6,gl.UNSIGNED_SHORT,0)
-}
-
-
 function drawAfricanOutline(gl:WebGL2RenderingContext,progInfo:AriaOutlineShaderProgramStructure,
     buffer:AriaPosBufferStructure,camera:AriaCamera){
     
@@ -537,13 +456,12 @@ async function main(){
     const canvas = <HTMLCanvasElement>(document.getElementById("webgl_displayer"));
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
-    const gl = <WebGL2RenderingContext>canvas.getContext("webgl2", { stencil: true });
+    const gl = <WebGL2RenderingContext>canvas.getContext("webgl", { stencil: true });
 
     //Stencil Test
     gl.enable(gl.STENCIL_TEST)
     gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE)
-    gl.stencilFunc(gl.ALWAYS,1,0xff)
-    gl.stencilMask(0xff)
+    
     //Mesh
     const african = await loadFile("./african.obj")
 
@@ -555,13 +473,10 @@ async function main(){
     const tex = createTexture(gl,texImg);
     const specTexImg = await loadImage("./african_specular.jpg")
     const specTex = createTexture(gl,specTexImg)
-    const postTexImg = await loadImage("./star.jpg")
-    const postTex = createTexture(gl,postTexImg)
 
     const texStruct = <AriaTextureStructure>{
         tex1:tex,
-        tex2:specTex,
-        tex3:postTex
+        tex2:specTex
     }
     //Shader
     const vSrc = await loadFile("./african-vertex.glsl");
@@ -617,40 +532,13 @@ async function main(){
         }
     }
 
-    //Post Shader
-    const vpsrc = await loadFile("./post-vertex.glsl")
-    const fpsrc = await loadFile("./post-fragment.glsl")
-    const postShaderProg = <WebGLProgram>initShaderProgram(gl,vpsrc,fpsrc)
-    const postProgInfo = <AriaPostShaderProgramStructure>{
-        program:postShaderProg,
-        attribLoc:{
-            aVert:gl.getAttribLocation(postShaderProg,"aVert"),
-            aTex:gl.getAttribLocation(postShaderProg,"aTex")
-        },
-        uniformLoc:{
-            projMat: gl.getUniformLocation(postShaderProg,"uProj"),
-            texSampler: gl.getUniformLocation(postShaderProg,"uSampler")
-        }
-    }
-    const postbuf = initRectangleBuffer(gl)
-
-    //FrameBuffer
-    const framebuf = new AriaFramebuffer(gl)
-    texStruct.tex3 = framebuf.tex
 
     //Render
     let delta = 0
     function render(){
-        
-        framebuf.bind()
         clearScene(gl)
         drawScene(gl,progInfo,buf,texStruct,delta,camera)
-        //drawAfricanOutline(gl,outProgInfo,buf,camera)
-
-        framebuf.unbind()
-        clearScene(gl)
-        drawRect(gl,postProgInfo,postbuf,texStruct,camera)
-        
+        drawAfricanOutline(gl,outProgInfo,buf,camera)
         //drawLight(gl,lightProgInfo,lightbuf,camera)
         delta+=0.01
         requestAnimationFrame(render)

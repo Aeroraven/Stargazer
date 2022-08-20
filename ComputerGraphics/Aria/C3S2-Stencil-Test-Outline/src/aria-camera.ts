@@ -44,11 +44,6 @@ export class AriaCamera{
         vec3.add(this.camLookAtCenter,this.camFront,this.camPos)
         mat4.lookAt(this.camLookAt,this.camPos,this.camLookAtCenter,this.camUp)
     }
-    getViewportOrtho(){
-        const proj = mat4.create()
-        mat4.ortho(proj,-1,1,-1,1,0,3)
-        return proj
-    }
     getPerspective(){
         const fov = 45.0 / 180 * Math.PI;
         const aspect = 1.0 * window.innerWidth / window.innerHeight;
