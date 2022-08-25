@@ -10,7 +10,7 @@ uniform vec3 uCamPos;
 
 void main(){
     vec4 lightCol = vec4(1.0);
-    vec4 texCol = vColor * 0.05 + texture2D(uSampler,vec2(vTex.s,vTex.t)) * 0.95;
+    vec4 texCol = vColor * 0.05 + texture2D(uSampler,vec2(vTex.s,vTex.t)) * 0.95 ;
     vec3 lightPos = vec3(1.5,0.5,2.0);
 
     //Ambient

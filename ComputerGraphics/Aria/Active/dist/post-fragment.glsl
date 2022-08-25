@@ -24,5 +24,5 @@ void main(){
         dy += offset;
     }
 
-    fragmentColor = wx;
+    fragmentColor = texture(uSampler,vTex);
 }
