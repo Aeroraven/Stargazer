@@ -25,4 +25,5 @@ void main(){
     }
 
     fragmentColor = texture(uSampler,vTex);
+    
 }
