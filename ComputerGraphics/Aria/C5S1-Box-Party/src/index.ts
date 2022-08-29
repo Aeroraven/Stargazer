@@ -76,7 +76,6 @@ async function main(){
 
     //Boxes
     for(let i=0;i<10;i++){
-        let rg = 3
         const boxTexture = (<AriaComTexture>AriaComTexture.create(gl))
             .setTex(assets.getTexture("wall/diffuse"))
         const boxGeometry = (<AriaComCube>AriaComCube.create(gl))
@@ -84,7 +83,7 @@ async function main(){
             .rotateX(Math.random()*2.0*Math.PI)
             .rotateY(Math.random()*2.0*Math.PI)
             .rotateZ(Math.random()*2.0*Math.PI)
-            .translate(Math.random()*rg*2-rg,Math.random()*rg*2-rg,Math.random()*rg*2-rg)
+            .translate(Math.random()*6-3,Math.random()*6-3,Math.random()*6-3)
         const boxBuffer = (<AriaComBuffers>AriaComBuffers.create(gl))
             .addGeometry(boxGeometry)
         const boxMesh = (<AriaComMesh>AriaComMesh.create(gl))

@@ -1,9 +1,9 @@
-import { AriaBufferMap } from "../core/aria-buffer-map";
-import { AriaCamera } from "../core/aria-camera";
-import { AriaShader } from "../core/aria-shader";
-import { AriaTextureMap } from "../core/aria-texture-map";
-import { mat4,mat3 } from "../../node_modules/gl-matrix-ts/dist/index";
-import { AriaLoadedMesh } from "../core/aria-loaded-mesh";
+import { AriaBufferMap } from "../../core/aria-buffer-map";
+import { AriaCamera } from "../../core/aria-camera";
+import { AriaShader } from "../../core/aria-shader";
+import { AriaTextureMap } from "../../core/aria-texture-map";
+import { mat4,mat3 } from "../../../node_modules/gl-matrix-ts/dist/index";
+import { AriaLoadedMesh } from "../../core/aria-loaded-mesh";
 
 export class AriaComAfrican{
     static initBuffer(gl:WebGL2RenderingContext,meshSrc:string):AriaBufferMap{

@@ -1,23 +1,20 @@
-export class AriaBufferMap{
-    mapping:Map<string,WebGLBuffer>
+export class AriaTextureMap{
+    mapping:Map<string,WebGLTexture>
     numVertices:number
     constructor(){
         this.mapping = new Map()
         this.numVertices = 0
     }
-    set(k:string,v:WebGLBuffer){
+    set(k:string,v:WebGLTexture){
         this.mapping.set(k,v)
     }
-    get(k:string):WebGLBuffer{
+    get(k:string):WebGLTexture{
         const r = this.mapping.get(k)
         if(r === undefined){
             throw new Error("Key missing")
         }else{
             return r
         }
-    }
-    exists(k:string){
-        return this.mapping.has(k)
     }
     setNumVertices(v:number){
         this.numVertices = v

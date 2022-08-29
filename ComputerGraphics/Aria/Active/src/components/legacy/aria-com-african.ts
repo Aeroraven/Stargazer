@@ -1,11 +1,11 @@
-import { AriaBufferMap } from "../core/aria-buffer-map";
-import { AriaCamera } from "../core/aria-camera";
-import { AriaShader } from "../core/aria-shader";
-import { AriaTextureMap } from "../core/aria-texture-map";
-import { mat4,mat3 } from "../../node_modules/gl-matrix-ts/dist/index";
-import { AriaLoadedMesh } from "../core/aria-loaded-mesh";
+import { AriaBufferMap } from "../../core/aria-buffer-map";
+import { AriaCamera } from "../../core/aria-camera";
+import { AriaShader } from "../../core/aria-shader";
+import { AriaTextureMap } from "../../core/aria-texture-map";
+import { mat4,mat3 } from "../../../node_modules/gl-matrix-ts/dist/index";
+import { AriaLoadedMesh } from "../../core/aria-loaded-mesh";
 
-export class AriaComAfricanInstancing{
+export class AriaComAfrican{
     static initBuffer(gl:WebGL2RenderingContext,meshSrc:string):AriaBufferMap{
         const mesh = new AriaLoadedMesh()
         mesh.loadFromWavefront(meshSrc)
@@ -30,8 +30,15 @@ export class AriaComAfricanInstancing{
         const eleBuffer = <WebGLBuffer>gl.createBuffer()
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,eleBuffer)
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(meshdata.f),gl.STATIC_DRAW)
-    
+
+        const tanbuffer = <WebGLBuffer>gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER,tanbuffer)
+        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(meshdata.tan),gl.STATIC_DRAW)
         
+        const bitanbuffer = <WebGLBuffer>gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER,bitanbuffer)
+        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(meshdata.bitan),gl.STATIC_DRAW)
+    
         //
         const r = new AriaBufferMap()
         r.setNumVertices(meshdata.v.length/3)
@@ -39,11 +46,12 @@ export class AriaComAfricanInstancing{
         r.set("col",colBuffer)
         r.set("norm",normBuffer)
         r.set("tex",texBuffer)
+        r.set("tangent",tanbuffer)
+        r.set("bitangent",bitanbuffer)
         r.set("ele",eleBuffer)
     
         return r
     }
-
     static draw(gl:WebGL2RenderingContext,progInfo:AriaShader,buffer:AriaBufferMap,tx:AriaTextureMap,camera:AriaCamera,sb:boolean=false){
         
         gl.enable(gl.DEPTH_TEST)
@@ -76,18 +84,22 @@ export class AriaComAfricanInstancing{
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer.get("norm"));
         gl.vertexAttribPointer(progInfo.getAttr("aNorm"),3,gl.FLOAT,false,0,0)
         gl.enableVertexAttribArray(progInfo.getAttr("aNorm"))
-    
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer.get("tangent"));
+        gl.vertexAttribPointer(progInfo.getAttr("aTangent"),3,gl.FLOAT,false,0,0)
+        gl.enableVertexAttribArray(progInfo.getAttr("aTangent"))
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer.get("bitangent"));
+        gl.vertexAttribPointer(progInfo.getAttr("aBitangent"),3,gl.FLOAT,false,0,0)
+        gl.enableVertexAttribArray(progInfo.getAttr("aBitangent"))
+
         //Use Shader
         progInfo.use()
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buffer.get("ele"))
-        
-        //Offset
-        let ofs = [-1.0,0.0,0.0,0.0, 1.0,1.0,0.0,0.0]
-
+    
         //Uniforms
         gl.uniform3fv(progInfo.getUniform("uCamPos"),camera.getCamPosArray())
         gl.uniform3fv(progInfo.getUniform("uCamFront"),camera.getCamFrontArray())
-        gl.uniform4fv(progInfo.getUniform("uOffset"),ofs)
         gl.uniformMatrix4fv(progInfo.getUniform("uModel"),false,modelview)
         gl.uniformMatrix4fv(progInfo.getUniform("uProj"),false,projectionMatrix)
         gl.uniformMatrix4fv(progInfo.getUniform("uModelInvTrans"),false,modelIT)
@@ -100,6 +112,10 @@ export class AriaComAfricanInstancing{
         gl.bindTexture(gl.TEXTURE_2D, tx.get("tex2"))
         gl.uniform1i(progInfo.getUniform("uSpecSampler"),1);
 
+        gl.activeTexture(gl.TEXTURE1)
+        gl.bindTexture(gl.TEXTURE_2D, tx.get("texNorm"))
+        gl.uniform1i(progInfo.getUniform("uNormSampler"),1);
+
         if(sb){
             gl.activeTexture(gl.TEXTURE2)
             gl.bindTexture(gl.TEXTURE_2D, tx.get("texSky"))
@@ -107,6 +123,6 @@ export class AriaComAfricanInstancing{
         }
         
     
-        gl.drawElementsInstanced(gl.TRIANGLES,buffer.getNumVertices(),gl.UNSIGNED_SHORT,0,2)
+        gl.drawElements(gl.TRIANGLES,buffer.getNumVertices(),gl.UNSIGNED_SHORT,0)
     }
 }

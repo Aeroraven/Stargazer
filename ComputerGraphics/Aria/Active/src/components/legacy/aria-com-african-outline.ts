@@ -1,7 +1,7 @@
-import { AriaBufferMap } from "../core/aria-buffer-map";
-import { AriaCamera } from "../core/aria-camera";
-import { AriaShader } from "../core/aria-shader";
-import { AriaTextureMap } from "../core/aria-texture-map";
+import { AriaBufferMap } from "../../core/aria-buffer-map";
+import { AriaCamera } from "../../core/aria-camera";
+import { AriaShader } from "../../core/aria-shader";
+import { AriaTextureMap } from "../../core/aria-texture-map";
 
 export class AriaComAfricanOutline{
     static draw(gl:WebGL2RenderingContext,progInfo:AriaShader,

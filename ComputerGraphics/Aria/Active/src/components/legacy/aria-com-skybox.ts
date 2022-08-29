@@ -1,7 +1,7 @@
-import { loadImage } from "../core/aria-base"
-import { AriaBufferMap } from "../core/aria-buffer-map"
-import { AriaCamera } from "../core/aria-camera"
-import { AriaShader } from "../core/aria-shader"
+import { loadImage } from "../../core/aria-base"
+import { AriaBufferMap } from "../../core/aria-buffer-map"
+import { AriaCamera } from "../../core/aria-camera"
+import { AriaShader } from "../../core/aria-shader"
 
 export class AriaComSkybox{
     gl:WebGL2RenderingContext

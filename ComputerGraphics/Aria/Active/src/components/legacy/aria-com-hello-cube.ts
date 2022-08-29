@@ -1,4 +1,4 @@
-import { AriaBufferMap } from "../core/aria-buffer-map";
+import { AriaBufferMap } from "../../core/aria-buffer-map";
 
 export class AriaComHelloCube{
     static initBuffer(gl:WebGL2RenderingContext):AriaBufferMap{
