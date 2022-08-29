@@ -1,8 +1,9 @@
 import { mat4, vec3 } from "../../../node_modules/gl-matrix-ts/dist/index";
 import { AriaComponent } from "../base/aria-component";
 import { AriaComBuffers } from "../core/aria-com-buffers";
+import { IAriaComGeometry } from "./aria-com-geometry";
 
-export class AriaComCube extends AriaComponent {
+export class AriaComCube extends AriaComponent implements IAriaComGeometry {
     cx: number
     cy: number
     cz: number

@@ -5,10 +5,10 @@ in vec2 aTex;
 
 out mediump vec2 vTex;
 
-uniform mat4 uProj;
+uniform mat4 uViewOrtho;
 
 
 void main(){
-    gl_Position = uProj * aVert;
+    gl_Position = uViewOrtho * aVert;
     vTex = aTex;
 }

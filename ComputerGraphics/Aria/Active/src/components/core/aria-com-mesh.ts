@@ -61,6 +61,7 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable{
         const gl = this.gl
         const modelview = this.camera.getLookAt()
         const projectionMatrix = this.camera.getPerspective()
+        const viewportOrtho = this.camera.getViewportOrtho()
         const buf : AriaComBuffers = <AriaComBuffers>this.getChild("buffer")
         
         //Shader
@@ -81,6 +82,7 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable{
 
         gl.uniformMatrix4fv(this.shader.getUniform("uModel"),false,modelview)
         gl.uniformMatrix4fv(this.shader.getUniform("uProj"),false,projectionMatrix)
+        gl.uniformMatrix4fv(this.shader.getUniform("uViewOrtho"),false,viewportOrtho)
     
         for(let i=0;i<this.texUniformMaps.length;i++){
             if(this.childExist(this.texUniformMaps[i].k)){

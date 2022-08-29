@@ -18,6 +18,7 @@ import { AriaComBuffers } from "./components/core/aria-com-buffers";
 import { AriaComCube } from "./components/geometry/aria-com-cube";
 import { AriaComScene } from "./components/core/aria-com-mesh-composite";
 import { AriaComTexture } from "./components/core/aria-com-texture";
+import { AriaComRect } from "./components/geometry/aria-com-rect";
 
 function clearScene(gl:WebGL2RenderingContext){ 
     //Clear
@@ -57,9 +58,6 @@ async function main(){
     //Camera
     camera.registerInteractionEvent()
 
-    //Post Shader
-    const postbuf = AriaComRectangle.initBuffer(gl)
-
     //Skybox Shader
     const skyCom = new AriaComSkybox(gl)
     await skyCom.loadTexFromFolder("./skybox/")
@@ -73,6 +71,7 @@ async function main(){
 
     //Scene
     const mainScene = (<AriaComScene>AriaComScene.create(gl))
+    const postScene = (<AriaComScene>AriaComScene.create(gl))
 
     //Boxes
     for(let i=0;i<10;i++){
@@ -95,6 +94,19 @@ async function main(){
         mainScene.addObject(boxMesh)
     }
     
+    //Post Tex
+    const postTex = (<AriaComTexture>AriaComTexture.create(gl))
+        .setTex(assets.getTexture("tex3"))
+    const postRect = (<AriaComRect>AriaComRect.create(gl))
+    const postBuffer = (<AriaComBuffers>AriaComBuffers.create(gl))
+        .addGeometry(postRect)
+    const postMesh =   (<AriaComMesh>AriaComMesh.create(gl))
+        .setCamera(camera)
+        .setShader(assets.getShader("postproc"))
+        .setBuffer(postBuffer)
+        .setTexture(AriaComMeshTextureType.acmtDiffuse,postTex)
+    postScene.addObject(postMesh)
+
     //Render
     function render(){
         //First pass
@@ -105,7 +117,7 @@ async function main(){
 
         //Postprocessing
         clearScene(gl)
-        AriaComRectangle.draw(gl,assets.getShader("postproc"),postbuf,assets.getTexStruct(),camera)
+        postScene.render()
         requestAnimationFrame(render)
     }
     requestAnimationFrame(render)
