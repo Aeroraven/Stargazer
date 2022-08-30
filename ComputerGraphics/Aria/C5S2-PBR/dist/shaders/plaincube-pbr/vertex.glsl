@@ -1,5 +1,5 @@
 #version 300 es
-precision lowp float;
+precision highp float;
 in vec4 aVert;
 in vec2 aTex;
 in vec3 aNorm;

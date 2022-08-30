@@ -1,6 +1,17 @@
+
+import { mat4,mat3 } from "../node_modules/gl-matrix-ts/dist/index";
 import { AriaCamera } from "./core/aria-camera"
 import { AriaFramebuffer, AriaFramebufferOption } from "./core/aria-framebuffer";
+import {initShaderProgram, loadFile, loadImage,createTexture } from "./core/aria-base"
+import { AriaShader } from "./core/aria-shader";
+import { AriaBufferMap } from "./core/aria-buffer-map";
+import { AriaTextureMap } from "./core/aria-texture-map";
+import { AriaComRectangle } from "./components/legacy/aria-com-rectangle";
+import { AriaComAfrican } from "./components/legacy/aria-com-african";
+import { AriaComSimLightBox } from "./components/legacy/aria-com-sim-light-box";
 import { AriaComSkybox } from "./components/legacy/aria-com-skybox";
+import { AriaComAfricanInstancing } from "./components/legacy/aria-com-african-instancing";
+import { AriaComFloor } from "./components/legacy/aria-com-floor";
 import { AriaAssetLoader } from "./core/aria-asset-loader";
 import { AriaComMesh, AriaComMeshTextureType } from "./components/core/aria-com-mesh";
 import { AriaComBuffers } from "./components/core/aria-com-buffers";
@@ -139,4 +150,7 @@ async function main(){
     requestAnimationFrame(render)
 }
 
+
+
 main()
+
