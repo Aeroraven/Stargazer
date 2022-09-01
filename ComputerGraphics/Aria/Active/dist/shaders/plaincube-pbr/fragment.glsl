@@ -88,11 +88,11 @@ void main(){
         shadowCoord = (shadowCoord+1.0)*0.5;
         vec2 shadowTelSize = vec2(1.0 / float(textureSize(uDiffuse,0).x), 1.0 / float(textureSize(uDiffuse,0).y));
         float shadowW = 0.0;
-        float dx = -1.0;
-        float dy = -1.0;
-        for(int i=-1;i<=1;i++){
-            dy=-1.0;
-            for(int j=-1;j<=1;j++){
+        float dx = -5.0;
+        float dy = -5.0;
+        for(int i=-5;i<=5;i++){
+            dy=-5.0;
+            for(int j=-5;j<=5;j++){
                 vec4 shadowColor = texture(uDiffuse,shadowCoord.xy+vec2(dx,dy)*shadowTelSize);
                 if(shadowCoord.z>=shadowColor.x+1e-3){
                     shadowW+=1.0;
@@ -101,7 +101,7 @@ void main(){
             }
             dx+=1.0;
         }
-        shadowW = shadowW/9.0;
+        shadowW = shadowW/121.0;
         rad = (1.0-shadowW) * rad;
         
         
