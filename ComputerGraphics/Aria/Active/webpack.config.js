@@ -1,5 +1,9 @@
 const { resolve } = require('path');
 const path=require('path');
+const WebpackObfuscator = require('webpack-obfuscator');
+const webpack = require("webpack")
+const UglifyJsPlugin  = require("uglifyjs-webpack-plugin");
+
 module.exports={
     entry:'./src/index.ts',
     output:{
@@ -12,16 +16,33 @@ module.exports={
     module: {
         rules: [
             {
-                test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件
-                use: "ts-loader",   // 就是上面安装的ts-loader
-                exclude: "/node-modules/", // 排除node-modules目录
+                test: /\.tsx?$/,    
+                use: "ts-loader",   
+                exclude: "/node-modules/", 
                 resolve:{
                     extensions:['.ts','.js']
                 }
+                
             }
         ]
     },
-    plugins:[],
+    plugins: [
+        new WebpackObfuscator ({
+            rotateStringArray: true,
+            compact: true,
+            deadCodeInjection: true,
+            deadCodeInjectionThreshold: 0.4,
+            stringArray: true,
+            stringArrayEncoding: ['rc4','base64'],
+            stringArrayThreshold: 1,
+        }, ['excluded_bundle_name.js']),
+        new UglifyJsPlugin({
+            extractComments: {
+                condition:false,
+            }
+        })
+
+    ],
     mode: 'development',
     devServer:{
         static: './dist',
@@ -29,5 +50,6 @@ module.exports={
         port:1551,
         hot:true,
     },
-    cache:false
+    cache:false,
+    
 }
