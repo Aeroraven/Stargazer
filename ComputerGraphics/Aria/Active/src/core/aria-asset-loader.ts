@@ -99,12 +99,15 @@ export class AriaAssetLoader{
             {name:"post-value-noise",v:"./shaders/post-value-noise/vertex.glsl",f:"./shaders/post-value-noise/fragment.glsl"},
             {name:"post-perlin-noise",v:"./shaders/post-perlin-noise/vertex.glsl",f:"./shaders/post-perlin-noise/fragment.glsl"},
             {name:"post-perlin-noise-3d",v:"./shaders/post-perlin-noise-3d/vertex.glsl",f:"./shaders/post-perlin-noise-3d/fragment.glsl"},
+            {name:"sine-wave",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
+            {name:"gerstner-wave",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
+        
         ]
 
         for(let el of shaderLists){
             AriaPageIndicator.getInstance().updateLoadingTip("Resources/Shader/"+el.name)
             AriaPageIndicator.getInstance().updateLoadingProgress(0)
-            loadAssert(await loadShader(el.name,el.v,el.f)); 
+            loadAssert(await loadShader(el.name,el.v.replace(/\%name\%/g,el.name),el.f.replace(/\%name\%/g,el.name))); 
         }
 
         //Textures
@@ -122,11 +125,11 @@ export class AriaAssetLoader{
             }
         }
         const textureLists = [
-            {name:"tex1",path:"./african_diffuse.jpg"},
-            {name:"tex2",path:"./african_specular.jpg"},
-            {name:"tex3",path:"./star.jpg"},
-            {name:"texFloor",path:"./floor.jpg"},
-            {name:"texNorm",path:"./normal.jpg"},
+            {name:"tex1",path:"./textures/african/african_diffuse.jpg"},
+            {name:"tex2",path:"./textures/african/african_specular.jpg"},
+            {name:"tex3",path:"./textures/star/star.jpg"},
+            {name:"texFloor",path:"./textures/star/floor.jpg"},
+            {name:"texNorm",path:"./textures/african/normal.jpg"},
             {name:'wall/diffuse',path:"./textures/wall/diffuse.jpg"},
             {name:'wood/albedo',path:"./textures/wood/albedo.png"},
             {name:'wood/ao',path:"./textures/wood/ao.png"},

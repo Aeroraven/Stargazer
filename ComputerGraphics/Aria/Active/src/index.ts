@@ -3,6 +3,7 @@ import { AriaStage } from "./stage/aria-stage-base";
 import { AriaStageFog } from "./stage/aria-stage-fog";
 import { AriaStagePerlinNoise } from "./stage/aria-stage-perlin-noise";
 import { AriaStageValueNoise } from "./stage/aria-stage-value-noise";
+import { AriaStageWave } from "./stage/aria-stage-wave";
 
 
 async function main(){
@@ -21,7 +22,7 @@ async function main(){
 
     //Params 
     const chosenStage = (()=>{
-        const defaultString = "perlin_noise"
+        const defaultString = "gerstner_wave"
         const titlePrefix = "Aeroraven Demo"
         const stageParam = (new URLSearchParams(window.location.href.replace(/(.|\s)*\?/i,""))).get("stage") 
             || (window.location.href += "?stage="+defaultString)
@@ -30,6 +31,8 @@ async function main(){
             {key:"fog", stage:AriaStageFog, name:"Fog"},
             {key:"value_noise", stage:AriaStageValueNoise, name:"Value Noise"},
             {key:"perlin_noise", stage:AriaStagePerlinNoise, name:"Perlin Noise"},
+            {key:"gerstner_wave", stage:AriaStageWave, name:"Gerstner Wave"},
+            
         ]
         let defaultType = AriaStage
         for(let value of stagePair){

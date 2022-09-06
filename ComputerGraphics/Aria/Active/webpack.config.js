@@ -3,6 +3,7 @@ const path=require('path');
 const WebpackObfuscator = require('webpack-obfuscator');
 const webpack = require("webpack")
 const UglifyJsPlugin  = require("uglifyjs-webpack-plugin");
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports={
     entry:'./src/index.ts',
@@ -13,6 +14,7 @@ module.exports={
     resolve:{
         extensions:['.ts','.js']
     },
+    
     module: {
         rules: [
             {
@@ -27,6 +29,13 @@ module.exports={
         ]
     },
     plugins: [
+        new CopyWebpackPlugin(
+            {
+                patterns:[
+                    { from: path.join(__dirname,'./assets'), to: './' },
+                ]
+            }
+        ),
         new WebpackObfuscator ({
             rotateStringArray: true,
             compact: true,
@@ -45,7 +54,7 @@ module.exports={
     ],
     mode: 'development',
     devServer:{
-        static: './dist',
+        static: './assets',
         compress: true,
         port:1551,
         hot:true,
