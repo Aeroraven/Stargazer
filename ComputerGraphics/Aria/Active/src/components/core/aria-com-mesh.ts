@@ -120,6 +120,7 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
         const buf : AriaComBuffers = <AriaComBuffers>this.getChild("buffer")
         const modelIT2 = mat4.create()
         const modelIT = mat4.create()
+        const model3 = this.camera.getLookAt3()
         mat4.invert(modelIT2,modelview)
         mat4.transpose(modelIT,modelIT2)
 
@@ -158,6 +159,7 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,buf.getBuffer().get("ele"))
 
         gl.uniformMatrix4fv(this.shader.getUniform("uModel"),false,modelview)
+        gl.uniformMatrix4fv(this.shader.getUniform("uModel3"),false,model3)
         gl.uniformMatrix4fv(this.shader.getUniform("uProj"),false,projectionMatrix)
         gl.uniformMatrix4fv(this.shader.getUniform("uViewOrtho"),false,viewportOrtho)
         gl.uniformMatrix4fv(this.shader.getUniform("uShadowOrtho"),false,shadowOrtho)

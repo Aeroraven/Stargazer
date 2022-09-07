@@ -101,7 +101,8 @@ export class AriaAssetLoader{
             {name:"post-perlin-noise-3d",v:"./shaders/post-perlin-noise-3d/vertex.glsl",f:"./shaders/post-perlin-noise-3d/fragment.glsl"},
             {name:"sine-wave",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
             {name:"gerstner-wave",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
-        
+            {name:"volume-render/first",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
+            {name:"volume-render/second",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"}
         ]
 
         for(let el of shaderLists){
@@ -136,7 +137,7 @@ export class AriaAssetLoader{
             {name:'wood/metal',path:"./textures/wood/metal.png"},
             {name:'wood/normal',path:"./textures/wood/normal.png"},
             {name:'wood/rough',path:"./textures/wood/roughness.png"},
-           
+            {name:'bonsai/volume',path:"./textures/bonsai/bonsai.raw.png"},
         ]
         for(let el of textureLists){
             AriaPageIndicator.getInstance().updateLoadingTip("Resources/Texture/"+el.name)
