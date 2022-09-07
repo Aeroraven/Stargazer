@@ -102,7 +102,9 @@ export class AriaAssetLoader{
             {name:"sine-wave",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
             {name:"gerstner-wave",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
             {name:"volume-render/first",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
-            {name:"volume-render/second",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"}
+            {name:"volume-render/second",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
+            {name:"fxaa/scene",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"},
+            {name:"fxaa/post",v:"./shaders/%name%/vertex.glsl",f:"./shaders/%name%/fragment.glsl"}
         ]
 
         for(let el of shaderLists){

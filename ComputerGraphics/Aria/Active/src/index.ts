@@ -1,6 +1,7 @@
 import { AriaPageIndicator } from "./core/aria-page-indicator";
 import { AriaStage } from "./stage/aria-stage-base";
 import { AriaStageFog } from "./stage/aria-stage-fog";
+import { AriaStageFXAA } from "./stage/aria-stage-fxaa";
 import { AriaStagePerlinNoise } from "./stage/aria-stage-perlin-noise";
 import { AriaStageValueNoise } from "./stage/aria-stage-value-noise";
 import { AriaStageVolume } from "./stage/aria-stage-volume";
@@ -23,7 +24,7 @@ async function main(){
 
     //Params 
     const chosenStage = (()=>{
-        const defaultString = "volume_render"
+        const defaultString = "fxaa"
         const titlePrefix = "Aeroraven Demo"
         const stageParam = (new URLSearchParams(window.location.href.replace(/(.|\s)*\?/i,""))).get("stage") 
             || (window.location.href += "?stage="+defaultString)
@@ -34,6 +35,7 @@ async function main(){
             {key:"perlin_noise", stage:AriaStagePerlinNoise, name:"Perlin Noise"},
             {key:"gerstner_wave", stage:AriaStageWave, name:"Gerstner Wave"},
             {key:"volume_render", stage:AriaStageVolume, name:"Volume Render"},
+            {key:"fxaa", stage:AriaStageFXAA, name:"Fast Approximate Antialiasing"},
         ]
         let defaultType = AriaStage
         for(let value of stagePair){

@@ -33,9 +33,11 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
     texUniformMaps:IAriaComMeshTextureTypeMapping[]
     texUniformOrds:number[]
     reservedKeys:string[]
+    instances:number 
 
     constructor(gl:WebGL2RenderingContext){
         super(gl)
+        this.instances = 1
         this.camera = new AriaCamera()
         this.shader = new AriaShader(gl,"","")
         this.depthShader = new AriaShader(gl,"","")
@@ -105,6 +107,10 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
 
     setLight(o: AriaComponent & IAriaComLight){
         this.addComponent("light",o)
+        return this
+    }
+    setNumInstances(x:number){
+        this.instances = x
         return this
     }
     addAttachments(n:string, o:IAriaComShaderEmitter & AriaComponent){
@@ -204,7 +210,8 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
             (<IAriaComLight><unknown>this.getChild("light")).emitUniforms(this.shader)
         }
 
-        gl.drawElements(gl.TRIANGLES,buf.getBuffer().numVertices,gl.UNSIGNED_SHORT,0)
+        //gl.drawElements(gl.TRIANGLES,buf.getBuffer().numVertices,gl.UNSIGNED_SHORT,0)
+        gl.drawElementsInstanced(gl.TRIANGLES,buf.getBuffer().numVertices,gl.UNSIGNED_SHORT,0,this.instances)
     
     }
 }

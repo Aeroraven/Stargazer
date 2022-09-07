@@ -2,14 +2,18 @@ import { AriaComBuffers } from "../components/core/aria-com-buffers";
 import { AriaComMesh, AriaComMeshTextureType } from "../components/core/aria-com-mesh";
 import { AriaComScene } from "../components/core/aria-com-mesh-composite";
 import { AriaComTexture } from "../components/core/aria-com-texture";
+import { AriaComGeometryInstancing } from "../components/effects/aria-com-geometry-instancing";
 import { AriaComCube } from "../components/geometry/aria-com-cube";
+import { AriaComRect } from "../components/geometry/aria-com-rect";
+import { AriaComLightSet } from "../components/light/aria-com-light-set";
+import { AriaComSimplePBR } from "../components/material/aria-com-simple-pbr";
 import { AriaAssetLoader } from "../core/aria-asset-loader";
 import { AriaCamera } from "../core/aria-camera";
 import { AriaFramebuffer, AriaFramebufferOption } from "../core/aria-framebuffer";
 import { AriaPageIndicator } from "../core/aria-page-indicator";
 import { AriaStage } from "./aria-stage-base";
 
-export class AriaStageVolume extends AriaStage{
+export class AriaStageFXAA extends AriaStage{
     renderEnt:()=>void
 
     constructor(){
@@ -51,50 +55,69 @@ export class AriaStageVolume extends AriaStage{
         camera.movePos(0,0,0)
         camera.disableInteraction()
 
-        //First Pass: Obtaining Backend Position (Endpoint of Ray) 
+        //First Pass: Scene Paiting
         const fpScene = (<AriaComScene>AriaComScene.create(gl))
         const fpFramebufferOpt = AriaFramebufferOption.create().setHdr(true).setScaler(1)
         const fpFramebuffer = new AriaFramebuffer(gl,fpFramebufferOpt)
-        assets.addTexture("scene/volume-first",fpFramebuffer.tex)
-
-        const bboxMeshGeometry = (<AriaComCube>AriaComCube.create(gl))
-            .scale(1)
+        const fpGeometry = (<AriaComCube>AriaComCube.create(gl))
+            .scale(0.3)
             .translate(0,0,0)
-        const bboxMeshBuffer = (<AriaComBuffers>AriaComBuffers.create(gl))
-            .addGeometry(bboxMeshGeometry)
-        const bboxMesh = (<AriaComMesh>AriaComMesh.create(gl))
-            .setShader(assets.getShader("volume-render/first"))
+            .rotateX(17/180*Math.PI)
+            .rotateY(48/180*Math.PI)
+            .rotateZ(27/180*Math.PI)
+            
+        const fpBuffer = (<AriaComBuffers>AriaComBuffers.create(gl))
+            .addGeometry(fpGeometry)
+        const fpLight = (<AriaComLightSet>AriaComLightSet.create(gl))
+            .addDirectionalLight([0,0,1],[10,10,10])
+        const fpInstancing = (<AriaComGeometryInstancing>AriaComGeometryInstancing.create(gl))
+            .setNumber(10)
+            .generateUniform()
+        const fpMaterial = (<AriaComSimplePBR>AriaComSimplePBR.create(gl))
+            .setAO(1.0)
+            .setAlbedo(1.0,0.1,0.1)
+            .setMetallic(0.5)
+            .setRoughness(0.5)
+        const fpMesh = (<AriaComMesh>AriaComMesh.create(gl))
+            .setShader(assets.getShader("fxaa/scene"))
+            .setBuffer(fpBuffer)
             .setCamera(camera)
-            .setBuffer(bboxMeshBuffer)
-        fpScene.addObject(bboxMesh)
+            .setMaterial(fpMaterial)
+            .setLight(fpLight)
+            .addAttachments("instancing",fpInstancing)
+            .setNumInstances(10)
         
+        fpScene.addObject(fpMesh)
+        assets.addTexture("fxaa/first",fpFramebuffer.tex)
+        
+        //Second Pass : FXAA
+        const spTexture = (<AriaComTexture>AriaComTexture.create(gl))
+            .setTex(assets.getTexture("fxaa/first"))
+        const spScene = (<AriaComScene>AriaComScene.create(gl))
+        const spGeometry = (<AriaComRect>AriaComRect.create(gl))
+        const spBuffer = (<AriaComBuffers>AriaComBuffers.create(gl))
+            .addGeometry(spGeometry)
+        const spMesh = (<AriaComMesh>AriaComMesh.create(gl))
+            .setShader(assets.getShader("fxaa/post"))
+            .setBuffer(spBuffer)
+            .setCamera(camera)
+            .setTexture(AriaComMeshTextureType.acmtDiffuse,spTexture)
+        spScene.addObject(spMesh)
+
+        //End of Scene Def
+
+        AriaPageIndicator.getInstance().done()
+        
+        let last = Date.now()
+        let turns = 0
+        let t=0;
+
         function clearScene(gl:WebGL2RenderingContext){ 
             gl.clearColor(0,0,0,1);
             gl.enable(gl.DEPTH_TEST);
             gl.depthFunc(gl.LEQUAL);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
         } 
-
-        //Second Pass: Ray Marching
-        const spBackTex = (<AriaComTexture>AriaComTexture.create(gl))
-            .setTex(assets.getTexture("scene/volume-first"))
-        const spOpacityTex = (<AriaComTexture>AriaComTexture.create(gl))
-            .setTex(assets.getTexture("bonsai/volume"))
-        const spScene = (<AriaComScene>AriaComScene.create(gl))
-        const bboxMeshAfter = (<AriaComMesh>AriaComMesh.create(gl))
-            .setShader(assets.getShader("volume-render/second"))
-            .setCamera(camera)
-            .setBuffer(bboxMeshBuffer)
-            .setTexture(AriaComMeshTextureType.acmtDiffuse,spOpacityTex)
-            .setTexture(AriaComMeshTextureType.acmtSpecular,spBackTex)
-        spScene.addObject(bboxMeshAfter);
-
-        AriaPageIndicator.getInstance().done()
-        AriaPageIndicator.getInstance().setSubTitle("Bonsai Model by Leandro Barbagallo. <br/>"
-            +"https://github.com/lebarba/WebGLVolumeRendering/tree/5de6351a17d53645919232804dded6de7a060c61/Web/bonsai.raw.png")
-        let last = Date.now()
-        let turns = 0
-        let t=0;
 
         const renderFunc = ()=>{
             //FPS Update
@@ -107,9 +130,9 @@ export class AriaStageVolume extends AriaStage{
             }
 
             //Camera Move
-            t+=0.01
-            let camPosZ = 2*Math.sin(t)
-            let camPosX = 2*Math.cos(t)
+            t+=0.0005
+            let camPosZ = 5*Math.sin(t)
+            let camPosX = 5*Math.cos(t)
             let camPosY = 0;
             camera.camPos[0] = camPosX
             camera.camPos[1] = camPosY
@@ -123,13 +146,13 @@ export class AriaStageVolume extends AriaStage{
 
             camera.movePos(0,0,0)
 
-            //First Pass Render
+            //First Pass
             fpFramebuffer.bind()
             clearScene(gl)
             fpScene.render()
             fpFramebuffer.unbind()
 
-            //Second Pass Render
+            //Second Pass
             clearScene(gl)
             spScene.render()
         }
