@@ -30,13 +30,13 @@ export class AriaComLightSet extends AriaComponent implements IAriaComLight{
 
         return this
     }
-    addDirectionalLight(pos:number[],col:number[]){
+    addDirectionalLight(pos:number[],col:number[],projPos:number[] = [0,9,0]){
         this.lightPos.push(pos)
         this.lightColor.push(col)
         this.lightType.push(1)
         const lightCamera = new AriaCamera()
         lightCamera.camFront = new Float32Array(pos)
-        lightCamera.camPos = new Float32Array([0,9,0])
+        lightCamera.camPos = new Float32Array(projPos)
         if(lightCamera.camFront[0]==0&&lightCamera.camFront[2]==0){
             lightCamera.camUp = new Float32Array([0,0,1])
         }

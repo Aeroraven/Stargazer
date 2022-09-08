@@ -63,7 +63,7 @@ export class AriaCamera{
         const fov = 45.0 / 180 * Math.PI;
         const aspect = 1.0 * window.innerWidth / window.innerHeight;
         const zNear = 0.01;
-        const zFar = 100;
+        const zFar = 1000;
         const projectionMatrix = mat4.create()
         mat4.perspective(projectionMatrix,fov,aspect,zNear,zFar)
         return projectionMatrix

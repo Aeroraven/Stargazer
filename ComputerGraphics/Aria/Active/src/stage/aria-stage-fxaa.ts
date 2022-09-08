@@ -91,6 +91,7 @@ export class AriaStageFXAA extends AriaStage{
         assets.addTexture("fxaa/first",fpFramebuffer.tex)
         
         //Second Pass : FXAA
+        const tpFramebuffer = new AriaFramebuffer(gl,fpFramebufferOpt)
         const spTexture = (<AriaComTexture>AriaComTexture.create(gl))
             .setTex(assets.getTexture("fxaa/first"))
         const spScene = (<AriaComScene>AriaComScene.create(gl))
@@ -103,6 +104,21 @@ export class AriaStageFXAA extends AriaStage{
             .setCamera(camera)
             .setTexture(AriaComMeshTextureType.acmtDiffuse,spTexture)
         spScene.addObject(spMesh)
+        assets.addTexture("fxaa/second",tpFramebuffer.tex)
+
+        //Second Pass : FXAA
+        const tpTexture = (<AriaComTexture>AriaComTexture.create(gl))
+            .setTex(assets.getTexture("fxaa/second"))
+        const tpScene = (<AriaComScene>AriaComScene.create(gl))
+        const tpGeometry = (<AriaComRect>AriaComRect.create(gl))
+        const tpBuffer = (<AriaComBuffers>AriaComBuffers.create(gl))
+            .addGeometry(tpGeometry)
+        const tpMesh = (<AriaComMesh>AriaComMesh.create(gl))
+            .setShader(assets.getShader("fxaa/post"))
+            .setBuffer(tpBuffer)
+            .setCamera(camera)
+            .setTexture(AriaComMeshTextureType.acmtDiffuse,tpTexture)
+        tpScene.addObject(tpMesh)
 
         //End of Scene Def
 
@@ -153,8 +169,14 @@ export class AriaStageFXAA extends AriaStage{
             fpFramebuffer.unbind()
 
             //Second Pass
+            tpFramebuffer.bind()
             clearScene(gl)
             spScene.render()
+            tpFramebuffer.unbind()
+
+            //Third Pass
+            tpScene.render()
+
         }
 
         this.renderEnt = renderFunc

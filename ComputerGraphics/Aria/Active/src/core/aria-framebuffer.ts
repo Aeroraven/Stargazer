@@ -80,6 +80,7 @@ export class AriaFramebuffer{
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,this.fb)
     }
     unbind(){
+        this.gl.viewport(0,0,window.innerWidth,window.innerHeight)
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,null)
     }
 }

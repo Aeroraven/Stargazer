@@ -2,6 +2,7 @@ import { AriaPageIndicator } from "./core/aria-page-indicator";
 import { AriaStage } from "./stage/aria-stage-base";
 import { AriaStageFog } from "./stage/aria-stage-fog";
 import { AriaStageFXAA } from "./stage/aria-stage-fxaa";
+import { AriaStageGLTF } from "./stage/aria-stage-gltf";
 import { AriaStagePerlinNoise } from "./stage/aria-stage-perlin-noise";
 import { AriaStageValueNoise } from "./stage/aria-stage-value-noise";
 import { AriaStageVolume } from "./stage/aria-stage-volume";
@@ -36,6 +37,7 @@ async function main(){
             {key:"gerstner_wave", stage:AriaStageWave, name:"Gerstner Wave"},
             {key:"volume_render", stage:AriaStageVolume, name:"Volume Render"},
             {key:"fxaa", stage:AriaStageFXAA, name:"Fast Approximate Antialiasing"},
+            {key:"gltf", stage:AriaStageGLTF, name:"GLTF Model"},
         ]
         let defaultType = AriaStage
         for(let value of stagePair){

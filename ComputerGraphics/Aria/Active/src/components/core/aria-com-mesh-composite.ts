@@ -32,3 +32,6 @@ export class AriaComMeshComposite extends AriaComponent implements IAriaRenderab
 export class AriaComScene extends AriaComMeshComposite{
 
 }
+export class AriaComModel extends AriaComMeshComposite{
+    
+}

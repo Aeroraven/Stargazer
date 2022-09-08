@@ -33,11 +33,13 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
     texUniformMaps:IAriaComMeshTextureTypeMapping[]
     texUniformOrds:number[]
     reservedKeys:string[]
-    instances:number 
+    instances:number
+    lightShadowPos:number[]
 
     constructor(gl:WebGL2RenderingContext){
         super(gl)
         this.instances = 1
+        this.lightShadowPos = [0,9,0]
         this.camera = new AriaCamera()
         this.shader = new AriaShader(gl,"","")
         this.depthShader = new AriaShader(gl,"","")
@@ -64,7 +66,7 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
         this.camera = lightCamera
         this.shader = this.depthShader
         lightCamera.camFront = new Float32Array((<AriaComLightSet><unknown>x).lightPos[id])
-        lightCamera.camPos = new Float32Array([0,9,0])
+        lightCamera.camPos = new Float32Array(this.lightShadowPos)
         if(lightCamera.camFront[0]==0&&lightCamera.camFront[2]==0){
             lightCamera.camUp = new Float32Array([0,0,1])
         }
@@ -74,7 +76,10 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
         this.shader = pushedShader
 
     }
-
+    setLightProjPos(x:number[]){
+        this.lightShadowPos = x
+        return this
+    }
     setCamera(o:AriaCamera){
         this.camera = o
         return this
@@ -135,18 +140,18 @@ export class AriaComMesh extends AriaComponent implements IAriaRenderable,IAriaC
 
         //Attrib
         gl.bindBuffer(gl.ARRAY_BUFFER, buf.getBuffer().get("pos"));
-        gl.vertexAttribPointer(this.shader.getAttr("aVert"),3,gl.FLOAT,false,0,0)
+        gl.vertexAttribPointer(this.shader.getAttr("aVert"),buf.getBuffer().getSize("pos") || 3, buf.getBuffer().getType("pos") ||gl.FLOAT,false,0,0)
         gl.enableVertexAttribArray(this.shader.getAttr("aVert"))
 
         if(buf.getBuffer().exists("tex")){
             gl.bindBuffer(gl.ARRAY_BUFFER, buf.getBuffer().get("tex"));
-            gl.vertexAttribPointer(this.shader.getAttr("aTex"),2,gl.FLOAT,false,0,0)
+            gl.vertexAttribPointer(this.shader.getAttr("aTex"),buf.getBuffer().getSize("tex") || 2,buf.getBuffer().getType("tex") || gl.FLOAT,false,0,0)
             gl.enableVertexAttribArray(this.shader.getAttr("aTex"))
         }
 
         if(buf.getBuffer().exists("norm")){
             gl.bindBuffer(gl.ARRAY_BUFFER, buf.getBuffer().get("norm"));
-            gl.vertexAttribPointer(this.shader.getAttr("aNorm"),3,gl.FLOAT,false,0,0)
+            gl.vertexAttribPointer(this.shader.getAttr("aNorm"),buf.getBuffer().getSize("norm") || 3,buf.getBuffer().getType("norm") || gl.FLOAT,false,0,0)
             gl.enableVertexAttribArray(this.shader.getAttr("aNorm"))
         }
 
