@@ -71,7 +71,7 @@ export class AriaStageFXAA extends AriaStage{
         const fpLight = (<AriaComLightSet>AriaComLightSet.create(gl))
             .addDirectionalLight([0,0,1],[10,10,10])
         const fpInstancing = (<AriaComGeometryInstancing>AriaComGeometryInstancing.create(gl))
-            .setNumber(10)
+            .setNumber(30)
             .generateUniform()
         const fpMaterial = (<AriaComSimplePBR>AriaComSimplePBR.create(gl))
             .setAO(1.0)
@@ -85,7 +85,7 @@ export class AriaStageFXAA extends AriaStage{
             .setMaterial(fpMaterial)
             .setLight(fpLight)
             .addAttachments("instancing",fpInstancing)
-            .setNumInstances(10)
+            .setNumInstances(30)
         
         fpScene.addObject(fpMesh)
         assets.addTexture("fxaa/first",fpFramebuffer.tex)

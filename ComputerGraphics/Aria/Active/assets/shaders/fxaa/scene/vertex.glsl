@@ -16,7 +16,7 @@ out vec3 vBitangent;
 
 uniform mat4 uModel;
 uniform mat4 uProj;
-uniform vec3 uInstPos[20];
+uniform vec3 uInstPos[100];
 
 void main(){
     vec4 vert = (aVert+vec4(uInstPos[gl_InstanceID],0.0));

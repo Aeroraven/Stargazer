@@ -54,8 +54,8 @@ void main(){
         float maxLumina = max(lM,max(lB,max(lT,max(lL,lR))));
         float minLumina = min(lM,min(lB,min(lT,min(lL,lR))));
 
-        const float THRESH_1 = 0.00;
-        const float THRESH_2 = 0.1;
+        const float THRESH_1 = 0.063;
+        const float THRESH_2 = 0.0312;
         if(abs(maxLumina-minLumina)>max(THRESH_2,THRESH_1*maxLumina)){
             //FXAA Here
             float flt = 2.0*(lL+lB+lT+lR) + (lLT+lLB+lRT+lRB)*1.0;
@@ -72,23 +72,93 @@ void main(){
             float positive = 0.0;
             float negative = 0.0;
             vec2 texStep = vec2(0.0);
+            vec2 scanDir = vec2(0.0);
+            vec3 dbgColor = vec3(1.0);
+            float gradv = 0.0;
             if(dir){
                 //Vertical
                 positive = lB;
                 negative = lT;
                 texStep.y = texOffset.y;
+                scanDir.x = texOffset.x;
+                dbgColor = vec3(1.0,0.0,0.0);
+                gradv = positive;
             }else{
                 //Horizontal
-                positive = lL;
+                negative = lL;
                 positive = lR;
                 texStep.x = texOffset.x;
+                scanDir.y = texOffset.y;
+                dbgColor = vec3(0.0,1.0,0.0);
+                gradv = positive;
             }
-            if(abs(positive-lM)>abs(negative-lM)){
+
+            if(abs(positive-lM)<abs(negative-lM)){
                 texStep = -texStep;
+                dbgColor.b = 1.0;
+                gradv = negative;
             }
+
+            //Mixing Coef
+            vec2 startingPos = vTex+texStep*0.5;
+            const int maxStep = 10;
+            vec4 ccolor = (texture(uDiffuse,vTex)+texture(uDiffuse,vTex+texStep))*0.5;
+            float lccolor = luminance(ccolor);
+            float ldir = 0.0;
+            float rdir = 0.0;
+            vec4 lcolor = vec4(0.0);
+            vec4 rcolor = vec4(0.0);
+            float lstep = 0.0;
+            float rstep = 0.0;
+
+            //Search Neg dir
+            for(int i=0;i<maxStep;i++){
+                lstep += 1.0;
+                vec2 lpix = startingPos - lstep * scanDir;
+                if(lpix.x<0.0||lpix.x>1.0||lpix.y<0.0||lpix.y>1.0){
+                    break;
+                }
+                float lluma = luminance(texture(uDiffuse,lpix)); 
+                lcolor = texture(uDiffuse,lpix);
+                ldir = sign(lluma-lccolor);
+                if(abs(lluma-lccolor)>gradv*0.25){
+                    break;
+                }
+            }
+
+            //Search Pos Dir
+            for(int i=0;i<maxStep;i++){
+                rstep += 1.0;
+                vec2 lpix = startingPos + rstep * scanDir;
+                if(lpix.x<0.0||lpix.x>1.0||lpix.y<0.0||lpix.y>1.0){
+                    break;
+                }
+                float lluma = luminance(texture(uDiffuse,lpix)); 
+                rcolor = texture(uDiffuse,lpix);
+                rdir = sign(lluma-lccolor);
+                if(abs(lluma-lccolor)>gradv*0.25){
+                    break;
+                }
+            }
+
+            //Get
+            float ecoef = 0.0; 
+            if(lstep<rstep){
+                ecoef = 0.5 - lstep/(lstep+rstep);
+                if(ldir==sign(lM-lccolor)){
+                    ecoef = 0.0;
+                }
+            }else{
+                ecoef = 0.5 - rstep/(lstep+rstep);
+                if(rdir==sign(lM-lccolor)){
+                    ecoef = 0.0;
+                }
+            }
+            coef = max(ecoef,coef);
             vec4 thisColor = texture(uDiffuse,vTex);
             vec4 destColor = texture(uDiffuse,vTex+texStep);
             fragmentColor = mix(thisColor,destColor,coef) ; //   vec4(vec3(coef),1.0)
+            //fragmentColor = vec4(dbgColor,1.0);   
             
         } else{
             fragmentColor = texture(uDiffuse,vTex);  
