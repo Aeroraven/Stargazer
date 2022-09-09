@@ -22,7 +22,7 @@ Execute the command `npm run build` to build the production bundle.
 
 Open the browser with url param `stage` to choose stages
 
-Available stages are `gltf`, `fog`, `value_noise`, `perlin_noise`, `volume_render`, `fxaa`, `gerstner_wave`
+Available stages are `gltf`, `fog`, `value_noise`, `perlin_noise`, `volume_render`, `fxaa`, `gerstner_wave`, `vol_light`
 
 For example: `http://localhost:1551/?stage=volume_render`
 
@@ -57,3 +57,5 @@ https://github.com/lebarba/WebGLVolumeRendering/
 https://zhuanlan.zhihu.com/p/431384101
 
 https://zhuanlan.zhihu.com/p/404778222
+
+http://www.alexandre-pestana.com/volumetric-lights/
