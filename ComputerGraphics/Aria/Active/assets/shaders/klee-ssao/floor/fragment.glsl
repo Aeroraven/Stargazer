@@ -61,7 +61,7 @@ void main(){
         lightPos = (uModel*vec4(uLightPos[0],0.0)).xyz;
     }
     
-    vec3 ambLight = vec3(0.003);
+    vec3 ambLight = vec3(0.08);
     
 
     //Basic lighting
