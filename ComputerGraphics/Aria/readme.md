@@ -22,7 +22,7 @@ Execute the command `npm run build` to build the production bundle.
 
 Open the browser with url param `stage` to choose stages
 
-Available stages are `gltf`, `fog`, `value_noise`, `perlin_noise`, `volume_render`, `fxaa`, `gerstner_wave`, `vol_light`
+Available stages are `gltf`, `fog`, `value_noise`, `perlin_noise`, `volume_render`, `fxaa`, `gerstner_wave`, `vol_light`, `ssao`, `ssr`
 
 For example: `http://localhost:1551/?stage=volume_render`
 
