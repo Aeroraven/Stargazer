@@ -43,6 +43,7 @@ Available stages are `gltf`, `fog`, `value_noise`, `perlin_noise`, `volume_rende
 9. `ssao`: Screen space ambient occlusion (C6S7)
 10. `ssr`: Screen space reflection (C6S8)
 11. `ts-outline`: Outline shader (C6S9)
+11. `waterwave`: Refraction under the circumstance of spherical wave, without depth difference (C6S10)
 
 
 
